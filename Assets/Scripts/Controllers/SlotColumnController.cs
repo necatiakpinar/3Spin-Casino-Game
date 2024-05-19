@@ -33,7 +33,7 @@ namespace DefaultNamespace.Controllers
 
         public async Task Spin(SlotObjectType objectType)
         {
-            var isExist = GameplayData.ResultDictionary.ContainsKey(GameplayData.CurrentSpinIndex);
+            var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
             if (isExist)
             {
                 _targetSlotObjectType = objectType;

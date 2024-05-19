@@ -6,15 +6,13 @@ namespace Data
     [Serializable]
     public class ResultInterval
     {
-        private int _minIndex;
-        private int _maxIndex;
-        private int _selectedIntervalIndex;
-        private bool _isSelected = false;
+        [SerializeField] private int _minIndex;
+        [SerializeField] private int _maxIndex;
+        [SerializeField] private int _selectedIntervalIndex;
         
         public int MinIndex => _minIndex;
         public int MaxIndex => _maxIndex;
         public int SelectedIntervalIndex => _selectedIntervalIndex;
-        public bool IsSelected => _isSelected;
         public ResultInterval(int minIndex, int maxIndex)
         {
             _minIndex = minIndex;
@@ -24,7 +22,6 @@ namespace Data
         public void SetSelected(int selectedIntervalIndex)
         {
             _selectedIntervalIndex = selectedIntervalIndex;
-            _isSelected = true;
         }
         
     }

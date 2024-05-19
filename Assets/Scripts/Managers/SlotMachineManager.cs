@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Addressables;
 using Data;
@@ -9,7 +8,6 @@ using DefaultNamespace;
 using DefaultNamespace.Controllers;
 using Enums;
 using UnityEngine;
-using UnityEngine.U2D;
 
 namespace Managers
 {
@@ -33,6 +31,11 @@ namespace Managers
             EventManager.Unsubscribe(ActionType.OnTilesCreated);
         }
 
+        private void Awake()
+        {
+            Player.LoadSaveDataFromDisk();
+        }
+
         public async void OnTilesCreated(Dictionary<int, List<TileMono>> gridDictionary)
         {
             _gridDictionary = gridDictionary;
@@ -43,68 +46,109 @@ namespace Managers
             }
 
             _resultPossibilitiesData = await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
-            CalculateSpinResults();
+
+            if (Player.GameplayData.Results.Count == 0)
+                CalculateSpinResults();
         }
 
+        /// <summary>
+        /// Sorts the result possibilities by possibility in descending order
+        /// </summary>
+        /// <param name="_resultPossibilities"></param>
+        public void SortResultPossibilities(List<ResultPossibility> _resultPossibilities)
+        {
+            bool swapped;
+            do
+            {
+                swapped = false;
+                for (int i = 0; i < _resultPossibilities.Count - 1; i++)
+                {
+                    if (_resultPossibilities[i].Possibility < _resultPossibilities[i + 1].Possibility)
+                    {
+                        var temp = _resultPossibilities[i];
+                        _resultPossibilities[i] = _resultPossibilities[i + 1];
+                        _resultPossibilities[i + 1] = temp;
+                        swapped = true;
+                    }
+                }
+            } while (swapped);
+        }
+
+        /// <summary>
+        ///  Calculate and set intervals for each result possibility
+        /// </summary>
         private void CalculateSpinResults()
         {
-            // Calculate and set intervals for each result possibility
-            for (int i = 0; i < _resultPossibilitiesData.ResultPossibilities.Count; i++)
-            {
-                var targetPossibilityData = _resultPossibilitiesData.ResultPossibilities[i];
-                var slotIntervals = CalculateAndGetIntervals(GameplayData.TotalSpinRatio, targetPossibilityData.Possibility);
-                var resultData = new ResultData(targetPossibilityData.TargetTypes, slotIntervals);
-                GameplayData.Results.Add(resultData);
-            }
+            Debug.LogError("girdi");
+            CalculateIntervalsForEachResult();
 
             // Prepare result intervals
             Dictionary<List<SlotObjectType>, List<int>> resultIntervals = PrepareResultIntervals();
-            for (int i = 0; i < GameplayData.Results.Count; i++)
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
-                var result = GameplayData.Results[i];
+                var result = Player.GameplayData.Results[i];
 //                Debug.Log($"Result {i}: {result.ResultObjects[0]} {result.ResultObjects[1]} {result.ResultObjects[2]}");
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var intervalIndex = resultIntervals[result.ResultObjects][j];
                     var resultInterval = result.Intervals[j];
                     resultInterval.SetSelected(intervalIndex);
-                    var isExist = GameplayData.ResultDictionary.ContainsKey(intervalIndex);
+                    var isExist = Player.GameplayData.ResultDictionary.ContainsKey(intervalIndex);
                     if (!isExist)
-                        GameplayData.ResultDictionary.Add(intervalIndex, result);
+                        Player.GameplayData.ResultDictionary.Add(intervalIndex, result.ResultObjects);
                     else
                         Debug.LogError("Interval is already exist");
 
-                      //  Debug.Log($"Interval: {intervalIndex}");
+                    //  Debug.Log($"Interval: {intervalIndex}");
                 }
             }
-            
-            //show result intervals
-            for (int i = 0; i < GameplayData.Results.Count; i++)
-            {
-                var result = GameplayData.Results[i];
-                for (int j = 0; j < result.Intervals.Count; j++)
-                {
-                    var interval = result.Intervals[j];
-                    Debug.Log($"Result {i}: {result.ResultObjects[0]} {result.ResultObjects[1]} {result.ResultObjects[2]} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
-                }
-            }
-            
+
+            Player.SaveDataToDisk();
+
+            // //show result intervals
+            // for (int i = 0; i < GameplayData.Results.Count; i++)
+            // {
+            //     var result = GameplayData.Results[i];
+            //     for (int j = 0; j < result.Intervals.Count; j++)
+            //     {
+            //         var interval = result.Intervals[j];
+            //         Debug.Log($"Result {i}: {result.ResultObjects[0]} {result.ResultObjects[1]} {result.ResultObjects[2]} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
+            //     }
+            // }
         }
-        
+
+        private void CalculateIntervalsForEachResult()
+        {
+            // Sort result possibilities by possibility
+            SortResultPossibilities(_resultPossibilitiesData.ResultPossibilities);
+
+            for (int i = 0; i < _resultPossibilitiesData.ResultPossibilities.Count; i++)
+            {
+                var targetPossibilityData = _resultPossibilitiesData.ResultPossibilities[i];
+                var slotIntervals = CalculateAndGetIntervals(Player.GameplayData.TotalSpinRatio, targetPossibilityData.Possibility);
+                var resultData = new ResultData(targetPossibilityData.TargetTypes, slotIntervals);
+                Player.GameplayData.Results.Add(resultData);
+            }
+        }
+
+        /// <summary>
+        /// Prepare result intervals
+        /// </summary>
+        /// <returns></returns>
         private Dictionary<List<SlotObjectType>, List<int>> PrepareResultIntervals()
         {
             Dictionary<List<SlotObjectType>, List<int>> resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
             List<int> assignedIntervalIndexes = new List<int>();
             List<int> allIndexes = new List<int>();
-            
-            for (int i = 0; i < GameplayData.TotalSpinRatio; i++)
+
+            for (int i = 0; i < Player.GameplayData.TotalSpinRatio; i++)
             {
                 allIndexes.Add(i);
             }
 
-            for (int i = 0; i < GameplayData.Results.Count; i++)
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
-                var result = GameplayData.Results[i];
+                var result = Player.GameplayData.Results[i];
                 List<int> intervalQueue = new List<int>();
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
@@ -122,35 +166,46 @@ namespace Managers
 //                        Debug.LogError($"GOTCHA! {result.ResultObjects[0]} {result.ResultObjects[1]} {result.ResultObjects[2]} {interval.MinIndex} {interval.MaxIndex}");
                         var randomIndexIndex = UnityEngine.Random.Range(0, allIndexes.Count);
                         randomIndex = allIndexes[randomIndexIndex];
-  //                      Debug.LogError($"Random Index: {randomIndex}");
+                        //                      Debug.LogError($"Random Index: {randomIndex}");
                     }
 
                     intervalQueue.Add(randomIndex);
                     assignedIntervalIndexes.Add(randomIndex);
                     allIndexes.Remove(randomIndex);
                 }
+
                 resultIntervals.Add(result.ResultObjects, intervalQueue);
             }
-            
+
             return resultIntervals;
         }
 
+
+        /// <summary>
+        /// Calculate and get intervals
+        /// </summary>
+        /// <param name="totalSpins"></param>
+        /// <param name="numberOfIntervals"></param>
+        /// <returns></returns>
         public List<ResultInterval> CalculateAndGetIntervals(int totalSpins, int numberOfIntervals)
         {
             var slotObjectIntervals = new List<ResultInterval>();
-            int intervalSize = totalSpins / numberOfIntervals;  // Her interval için temel boyut
-            int remainingSpins = totalSpins % numberOfIntervals;  // Dağıtılamayan kalan spin sayısı
+            int intervalSize = totalSpins / numberOfIntervals; // Her interval için temel boyut
+            int remainingSpins = totalSpins % numberOfIntervals; // Dağıtılamayan kalan spin sayısı
 
             int start = 0;
             for (int i = 0; i < numberOfIntervals; i++)
             {
                 int intervalSizeWithExtra = intervalSize;
-                if (i < remainingSpins) {
-                    intervalSizeWithExtra += 1;  // Ekstra spinleri eşit olarak ilk 'remainingSpins' sayıda aralığa dağıt
+                if (i < remainingSpins)
+                {
+                    intervalSizeWithExtra += 1; // Ekstra spinleri eşit olarak ilk 'remainingSpins' sayıda aralığa dağıt
                 }
 
                 int end = start + intervalSizeWithExtra - 1;
-                if (i == numberOfIntervals - 1) {  // Son aralık için kalan tüm spinleri ekle
+                if (i == numberOfIntervals - 1)
+                {
+                    // Son aralık için kalan tüm spinleri ekle
                     end = totalSpins - 1;
                 }
 
@@ -161,19 +216,23 @@ namespace Managers
 
             return slotObjectIntervals;
         }
-        
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space) && !_isSpinning)
                 Spin();
         }
-        
+
+        /// <summary>
+        /// Spin the slot machine
+        /// </summary>
         private async void Spin()
         {
-            var isExist = GameplayData.ResultDictionary.ContainsKey(GameplayData.CurrentSpinIndex);
+            var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
             if (isExist)
             {
-                var spinResult = GameplayData.ResultDictionary[GameplayData.CurrentSpinIndex].ResultObjects;
+                var spinResult = Player.GameplayData.ResultDictionary[Player.GameplayData.CurrentSpinIndex];
+                Debug.LogError($"{Player.GameplayData.CurrentSpinIndex} {spinResult[0]} {spinResult[1]} {spinResult[2]}");
                 //Debug.LogError($"{spinResult[0]} {spinResult[1]} {spinResult[2]}");
                 _isSpinning = true;
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
@@ -183,13 +242,14 @@ namespace Managers
                     else
                     {
                         _slotColumnControllers[i].Spin(spinResult[i]);
-                        await Task.Delay(50);    
+                        await Task.Delay(50);
                     }
                 }
             }
-            
+
             _isSpinning = false;
-            GameplayData.CurrentSpinIndex++;
+            Player.GameplayData.CurrentSpinIndex++;
+            Player.SaveDataToDisk();
         }
     }
-} 
+}
