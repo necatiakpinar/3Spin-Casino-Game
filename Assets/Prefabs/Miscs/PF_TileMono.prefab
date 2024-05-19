@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 21727889502210912}
   - component: {fileID: 2386465281815715328}
   m_Layer: 0
-  m_Name: TileMono
+  m_Name: PF_TileMono
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

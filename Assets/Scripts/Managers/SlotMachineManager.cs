@@ -79,7 +79,6 @@ namespace Managers
         /// </summary>
         private void CalculateSpinResults()
         {
-            Debug.LogError("girdi");
             CalculateIntervalsForEachResult();
 
             // Prepare result intervals
@@ -179,8 +178,7 @@ namespace Managers
 
             return resultIntervals;
         }
-
-
+        
         /// <summary>
         /// Calculate and get intervals
         /// </summary>
