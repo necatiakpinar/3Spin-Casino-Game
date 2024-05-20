@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Addressables;
+using Controllers;
 using Data;
 using Data.ScriptableObjects;
 using DefaultNamespace;
-using DefaultNamespace.Controllers;
 using Enums;
 using UnityEngine;
 
@@ -47,7 +47,7 @@ namespace Managers
 
             _resultPossibilitiesData = await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
 
-            if (Player.GameplayData.Results.Count == 0)
+            if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
                 CalculateSpinResults();
         }
 
@@ -79,6 +79,11 @@ namespace Managers
         /// </summary>
         private void CalculateSpinResults()
         {
+            // Clear previous results
+            Player.GameplayData.Results.Clear();
+            Player.GameplayData.ResultDictionary.Clear();
+            Player.SaveDataToDisk();
+            
             CalculateIntervalsForEachResult();
 
             // Prepare result intervals
@@ -246,7 +251,14 @@ namespace Managers
             }
 
             _isSpinning = false;
-            Player.GameplayData.CurrentSpinIndex++;
+            
+            if (Player.GameplayData.CurrentSpinIndex  < Player.GameplayData.TotalSpinRatio - 1) // Continue to next spin
+                Player.GameplayData.CurrentSpinIndex++;
+            else // Recalculate results if all spins are done
+            {
+                Player.GameplayData.CurrentSpinIndex = 0;
+                CalculateSpinResults();
+            }
             Player.SaveDataToDisk();
         }
     }

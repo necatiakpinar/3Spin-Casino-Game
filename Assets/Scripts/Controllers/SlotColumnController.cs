@@ -1,29 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data;
+using DefaultNamespace;
 using Enums;
 using UnityEngine;
 
-namespace DefaultNamespace.Controllers
+namespace Controllers
 {
     public class SlotColumnController
     {
         private List<TileMono> _tiles;
         private TileMono _middleSlot;
 
-        private bool _isCheckingForTarget = false;
-        private bool _isStopped = false;
-
-        private readonly int _spinSpeed = 100; //todo:(necatiakpinar) Convert into SO and fetch it from addressables
-        private readonly int _fastStopSpeed = 100;
-        private readonly int _normalStopSpeed = 1000;
-        private readonly int _slowDownSpeed = 500;
-        private readonly int _middleSlotIndex = 2;
+        private readonly int _spinSpeed = 45; 
+        private readonly int _slowDownSpeed = 250; 
+        private readonly int _middleSlotIndex = 2; 
+        private readonly float _defaultSlotDuration = 500f;
 
         private SlotObjectType _targetSlotObjectType;
-
-        public List<TileMono> Tiles => _tiles;
-
 
         public SlotColumnController(List<TileMono> tiles)
         {
@@ -33,77 +26,71 @@ namespace DefaultNamespace.Controllers
 
         public async Task Spin(SlotObjectType objectType)
         {
-            var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
-            if (isExist)
+            _targetSlotObjectType = objectType;
+            
+            await SpinForDuration();
+            await SlowDownToStop(objectType);
+        }
+
+        private async Task SpinForDuration()
+        {
+            SetSlotObjectBlurVisibility(true);
+            var startTime = Time.time;
+            while (Time.time - startTime < _defaultSlotDuration / 1000f)
             {
-                _targetSlotObjectType = objectType;
-                await CheckForSpinResult();
+                await DoMovement(_spinSpeed);
             }
         }
 
-        private async Task CheckForSpinResult()
+        private async Task SlowDownToStop(SlotObjectType objectType)
         {
-            await TryToDoMovement(_targetSlotObjectType, _middleSlot);
-
-            SetSlotObjectsSpriteToNormal(false);
-        }
-
-        private async Task TryToDoMovement(SlotObjectType objectType, TileMono middleSlot)
-        {
-            while (!IsSlotObjectInFirstTile(middleSlot, objectType))
+            var isNearTarget = false;
+            while (!IsSlotObjectInFirstTile(_middleSlot, objectType))
             {
-                if (IsSlotObjectInFirstTile(middleSlot, objectType))
+                if (CheckProximityToTarget(objectType, 2) && !isNearTarget)
                 {
-                    _isStopped = true;
-                    break;
+                    isNearTarget = true; 
+                    SetSlotObjectBlurVisibility(false);
                 }
-
-                await DoMovement();
-                await CheckForSpinResult();
-                return;
+                await DoMovement(_spinSpeed);
             }
+            
+            SetSlotObjectBlurVisibility(false);
         }
 
-        private async Task DoMovement()
+        private bool CheckProximityToTarget(SlotObjectType objectType, int proximity)
+        {
+            var targetIndex = _tiles.FindIndex(t => t.SlotObjectMono.Type == objectType);
+            return Mathf.Abs(targetIndex - _middleSlotIndex) <= proximity;
+        }
+
+        private async Task DoMovement(int speed)
         {
             for (int i = _tiles.Count - 1; i >= 0; i--)
             {
                 var tile = _tiles[i];
                 if (i - 1 >= 0)
                 {
-                    tile.DropObjectToBottom(_tiles[i - 1], GetCurrentSpeed());
+                    tile.DropObjectToBottom(_tiles[i - 1], speed);
                 }
                 else
                 {
-                    tile.DropObjectToBottom(_tiles[_tiles.Count - 1], GetCurrentSpeed());
+                    tile.DropObjectToBottom(_tiles[_tiles.Count - 1], speed);
                 }
             }
 
-            await Task.Delay(GetCurrentSpeed());
+            await Task.Delay(speed);
         }
 
         private bool IsSlotObjectInFirstTile(TileMono tile, SlotObjectType objectType)
         {
             return tile.Coordinates.y == _middleSlotIndex && tile.SlotObjectMono.Type == objectType;
         }
-
-        private int GetCurrentSpeed()
+        
+        public void SetSlotObjectBlurVisibility(bool isBlurred)
         {
-            if (_isStopped)
-            {
-                return _slowDownSpeed;
-            }
-
-            return _spinSpeed;
-        }
-
-        private void SetSlotObjectsSpriteToNormal(bool isBlurred)
-        {
-            for (var i = 0; i < _tiles.Count; i++)
-            {
-                var tile = _tiles[i];
+            foreach (var tile in _tiles)
                 tile.SlotObjectMono.SetSprite(isBlurred);
-            }
         }
     }
 }

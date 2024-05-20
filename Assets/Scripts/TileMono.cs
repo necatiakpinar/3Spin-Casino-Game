@@ -19,7 +19,7 @@ namespace DefaultNamespace
             slotObjectMono.transform.localPosition = Vector2.zero;
         }
         
-        public void DropObjectToBottom(TileMono bottomTile, int speed)
+        public async Task DropObjectToBottom(TileMono bottomTile, int speed)
         {
             _slotObjectMono.MoveToTile(bottomTile, speed);
         }

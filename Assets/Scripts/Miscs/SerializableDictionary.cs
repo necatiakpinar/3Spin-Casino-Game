@@ -68,5 +68,10 @@ namespace Miscs
                 }
             }
         }
+        
+        public void Clear()
+        {
+            pairs.Clear();
+        }
     }
 }

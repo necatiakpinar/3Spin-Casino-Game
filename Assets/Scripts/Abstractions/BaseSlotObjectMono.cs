@@ -42,7 +42,7 @@ namespace Abstractions
             _blurredSpriteAtlas = await AddressableLoader.LoadAssetAsync<SpriteAtlas>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SA_BlurredSlotObjects));
             
             _normalSprite = _normalSpriteAtlas.GetSprite(_type.ToString());
-            _blurredSprite = _blurredSpriteAtlas.GetSprite(_type.ToString() + _blurredSuffix);
+            _blurredSprite = _blurredSpriteAtlas.GetSprite(_type + _blurredSuffix);
 
             SetSprite(false);
         }
@@ -64,10 +64,6 @@ namespace Abstractions
                 _spriteRenderer.enabled = true;
             
             var duration = speed / _milliSeconds;
-            if (duration <= _blurredSpriteSpeedThreshold)
-                SetSprite(true);
-            else
-                SetSprite(false);
             
             transform.SetParent(targetTile.transform);
             transform.DOLocalMove(Vector3.zero, duration).SetEase(Ease.Linear).OnComplete(() =>
