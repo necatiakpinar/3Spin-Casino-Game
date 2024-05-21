@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Addressables;
 using Controllers;
@@ -18,7 +19,7 @@ namespace Managers
         private List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
 
         private bool _isSpinning = false;
-        private int _maxCounter = 150;
+        private int _maxCounter = 2000;
 
         public void OnEnable()
         {
@@ -47,7 +48,7 @@ namespace Managers
 
             _resultPossibilitiesData = await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
 
-            if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
+            //if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
                 CalculateSpinResults();
         }
 
@@ -134,51 +135,94 @@ namespace Managers
                 Player.GameplayData.Results.Add(resultData);
             }
         }
-
-        /// <summary>
-        /// Prepare result intervals
-        /// </summary>
-        /// <returns></returns>
+        
+        private List<ResultIndexHolder> _resultIndexHolders = new List<ResultIndexHolder>();
+        private bool IsResultExistInInterval(string resultName, ResultInterval resultInterval, out int index)
+        {
+            for (int i = resultInterval.MinIndex; i < resultInterval.MaxIndex + 1; i++)
+            {
+                if (_resultIndexHolders[i].Result == resultName && !_resultIndexHolders[i].IsLocked)
+                {
+                    index = i;
+                    return true;
+                }
+            }
+            
+            var randomAvailableIndex = UnityEngine.Random.Range(resultInterval.MinIndex, resultInterval.MaxIndex + 1);
+            var currentCounter = 0;
+            while (_resultIndexHolders[randomAvailableIndex].IsLocked && currentCounter < _maxCounter)
+            {
+                randomAvailableIndex = UnityEngine.Random.Range(resultInterval.MinIndex, resultInterval.MaxIndex + 1);
+                currentCounter++;
+            }
+            
+            if (currentCounter >= _maxCounter)
+            {
+                Debug.LogError("Counter is exceeded");
+            }
+            index = randomAvailableIndex;
+            return false;
+        }
+        
         private Dictionary<List<SlotObjectType>, List<int>> PrepareResultIntervals()
         {
             Dictionary<List<SlotObjectType>, List<int>> resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
-            List<int> assignedIntervalIndexes = new List<int>();
-            List<int> allIndexes = new List<int>();
-
-            for (int i = 0; i < Player.GameplayData.TotalSpinRatio; i++)
-            {
-                allIndexes.Add(i);
-            }
-
+            
+            _resultIndexHolders = new List<ResultIndexHolder>();
+            var currentIndex = 0;
             for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
                 var result = Player.GameplayData.Results[i];
-                List<int> intervalQueue = new List<int>();
+                for (int j = 0; j < result.Intervals.Count; j++)
+                {
+                    var resultIndexHolder = new ResultIndexHolder(currentIndex, result.Name);
+                    _resultIndexHolders.Add(resultIndexHolder);
+                    currentIndex++;
+                }
+            }
+
+            // for (int i = 0; i < _resultIndexHolders.Count; i++)
+            // {
+            //     Debug.LogError($"{_resultIndexHolders[i].Index} {_resultIndexHolders[i].Result}");
+            // }
+            
+            // Check Interval Indexes
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            {
+                var result = Player.GameplayData.Results[i];
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var interval = result.Intervals[j];
-                    var randomIndex = UnityEngine.Random.Range(interval.MinIndex, interval.MaxIndex + 1);
-                    var currentCounter = 0;
-                    while (assignedIntervalIndexes.Contains(randomIndex) && currentCounter < _maxCounter)
+                    var isResultExist = IsResultExistInInterval(result.Name, interval, out var index);
+                    if (isResultExist)
                     {
-                        randomIndex = UnityEngine.Random.Range(interval.MinIndex, interval.MaxIndex + 1);
-                        currentCounter++;
+                        _resultIndexHolders[index].SetResult(result.Name);
                     }
-
-                    if (currentCounter == _maxCounter)
+                    else
                     {
-//                        Debug.LogError($"GOTCHA! {result.ResultObjects[0]} {result.ResultObjects[1]} {result.ResultObjects[2]} {interval.MinIndex} {interval.MaxIndex}");
-                        var randomIndexIndex = UnityEngine.Random.Range(0, allIndexes.Count);
-                        randomIndex = allIndexes[randomIndexIndex];
-                        //                      Debug.LogError($"Random Index: {randomIndex}");
+                        _resultIndexHolders[index].SetResult(result.Name);
                     }
-
-                    intervalQueue.Add(randomIndex);
-                    assignedIntervalIndexes.Add(randomIndex);
-                    allIndexes.Remove(randomIndex);
                 }
-
-                resultIntervals.Add(result.ResultObjects, intervalQueue);
+            }
+            
+            // // // // show result index holders
+            // for (int i = 0; i < _resultIndexHolders.Count; i++)
+            // {
+            //     Debug.LogError($"{_resultIndexHolders[i].Index} {_resultIndexHolders[i].Result}");
+            // }
+            
+            // for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            // {
+            //     var result = Player.GameplayData.Results[i];
+            //     List<int> resultIntervalIndexes = _resultIndexHolders.Where(x => x.Result == result.Name).Select(x => x.Index ).ToList();
+            //     Debug.LogError(resultIntervalIndexes.Count);
+            // }
+            //
+            for (int i = 0; i < _resultIndexHolders.Count; i++)
+            {
+                var resultIndexHolder = _resultIndexHolders[i];
+                if (!resultIndexHolder.IsLocked)
+                    Debug.LogError($"{resultIndexHolder.Index} {resultIndexHolder.Result}");
             }
 
             return resultIntervals;
@@ -193,8 +237,8 @@ namespace Managers
         public List<ResultInterval> CalculateAndGetIntervals(int totalSpins, int numberOfIntervals)
         {
             var slotObjectIntervals = new List<ResultInterval>();
-            int intervalSize = totalSpins / numberOfIntervals; // Her interval için temel boyut
-            int remainingSpins = totalSpins % numberOfIntervals; // Dağıtılamayan kalan spin sayısı
+            int intervalSize = totalSpins / numberOfIntervals; 
+            int remainingSpins = totalSpins % numberOfIntervals; 
 
             int start = 0;
             for (int i = 0; i < numberOfIntervals; i++)
@@ -202,13 +246,12 @@ namespace Managers
                 int intervalSizeWithExtra = intervalSize;
                 if (i < remainingSpins)
                 {
-                    intervalSizeWithExtra += 1; // Ekstra spinleri eşit olarak ilk 'remainingSpins' sayıda aralığa dağıt
+                    intervalSizeWithExtra += 1;
                 }
 
                 int end = start + intervalSizeWithExtra - 1;
                 if (i == numberOfIntervals - 1)
                 {
-                    // Son aralık için kalan tüm spinleri ekle
                     end = totalSpins - 1;
                 }
 

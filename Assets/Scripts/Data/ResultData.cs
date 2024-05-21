@@ -10,6 +10,8 @@ namespace Data
     {
         [SerializeField] private List<SlotObjectType> _resultObjects;
         [SerializeField] private List<ResultInterval> _intervals;
+
+        public string Name => string.Join(", ", _resultObjects);
         
         public List<SlotObjectType> ResultObjects => _resultObjects;
         public List<ResultInterval> Intervals => _intervals;

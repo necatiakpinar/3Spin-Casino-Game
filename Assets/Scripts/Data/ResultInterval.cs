@@ -8,7 +8,7 @@ namespace Data
     {
         [SerializeField] private int _minIndex;
         [SerializeField] private int _maxIndex;
-        [SerializeField] private int _selectedIntervalIndex;
+        [SerializeField] private int _selectedIntervalIndex = -1;
         
         public int MinIndex => _minIndex;
         public int MaxIndex => _maxIndex;
