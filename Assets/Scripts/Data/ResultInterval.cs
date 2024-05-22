@@ -9,9 +9,11 @@ namespace Data
         [SerializeField] private int _minIndex;
         [SerializeField] private int _maxIndex;
         [SerializeField] private int _selectedIntervalIndex = -1;
+        [SerializeField] private bool _isAddedIntoResultHolder = false;
         
-        public int MinIndex => _minIndex;
-        public int MaxIndex => _maxIndex;
+        public int MinIndex { get => _minIndex; set => _minIndex = value; }
+        public int MaxIndex { get => _maxIndex; set => _maxIndex = value; }
+        public bool IsAddedIntoResultHolder { get => _isAddedIntoResultHolder; set => _isAddedIntoResultHolder = value; }
         public int SelectedIntervalIndex => _selectedIntervalIndex;
         public ResultInterval(int minIndex, int maxIndex)
         {
