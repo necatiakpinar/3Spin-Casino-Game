@@ -2,20 +2,21 @@ using Data;
 
 namespace Managers
 {
-    public class ResultIndexHolder
+    public class SpinResultHolder
     {
-        private int _index;
+        private int _spinIndex;
         private ResultData _result;
         private bool _isLocked = false;
         
-        public int Index => _index;
-        public ResultData Result => _result;
+        public int SpinIndex => _spinIndex;
+        public ResultData Result { get => _result; set => _result = value; }
         public bool IsLocked => _isLocked;
         
-        public ResultIndexHolder(int index, ResultData result)
+        public SpinResultHolder(int spinIndex, ResultData result)
         {
-            _index = index;
+            _spinIndex = spinIndex;
             _result = result;
+            
         }
         
         public void SetResult(ResultData name)

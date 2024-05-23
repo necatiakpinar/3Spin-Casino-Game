@@ -13,17 +13,32 @@ namespace Data
         [SerializeField] private int _possibility;
 
         public string Name => string.Join(", ", _resultObjects);
-        
+
         public List<SlotObjectType> ResultObjects => _resultObjects;
-        public List<ResultInterval> Intervals { get => _intervals; set => _intervals = value;}
+
+        public List<ResultInterval> Intervals
+        {
+            get => _intervals;
+            set => _intervals = value;
+        }
+
         public int Possibility => _possibility;
-        
+
         public ResultData(List<SlotObjectType> resultObjects, List<ResultInterval> intervals, int possibility)
         {
             _resultObjects = resultObjects;
             _intervals = intervals;
             _possibility = possibility;
         }
-        
+
+        public ResultInterval GetInterval(int spinIndex)
+        {
+            foreach (var interval in _intervals)
+
+                if (spinIndex >= interval.MinIndex && spinIndex <= interval.MaxIndex)
+                    return interval;
+
+            return null;
+        }
     }
 }
