@@ -23,6 +23,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - ScriptableObjects
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29019656372f28843aab8f130f3a8b1f
+    m_Address: SO_SlotObjectCurrenciesData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObjects
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 477077eeba850b548aa94f4662af11bd, type: 2}
   m_SchemaSet:

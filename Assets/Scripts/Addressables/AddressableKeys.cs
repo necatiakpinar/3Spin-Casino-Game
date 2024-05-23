@@ -9,7 +9,8 @@
                 SA_NormalSlotObjects,
                 
                 //Scriptable Objects
-                SO_ResultPossibilitiesData
+                SO_ResultPossibilitiesData,
+                SO_SlotObjectCurrenciesData
             }
             public static string GetKey(AssetKeys key)
             {

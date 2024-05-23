@@ -10,7 +10,7 @@ namespace Controllers
     {
         private List<TileMono> _tiles;
         private TileMono _middleSlot;
-
+        
         private readonly int _spinSpeed = 45; 
         private readonly int _slowDownSpeed = 250; 
         private readonly int _middleSlotIndex = 2; 
