@@ -9,16 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eaa5fec494d42768de70f50f59167cf, type: 3}
-  m_Name: SO_SlotColumnPropertiesData
+  m_Script: {fileID: 11500000, guid: a8df787aa5334770bc2eb4e8499aa8de, type: 3}
+  m_Name: SO_SlotObjectProperties
   m_EditorClassIdentifier: 
-  _stopSpeeds:
-    pairs:
-    - Key: 1
-      Value: 50
-    - Key: 2
-      Value: 1000
-    - Key: 3
-      Value: 2250
-  _middleSlotIndex: 2
-  _spinSpeed: 45
+  _blurredSuffix: _Blur
+  _blurredSpriteSpeedThreshold: 0.2

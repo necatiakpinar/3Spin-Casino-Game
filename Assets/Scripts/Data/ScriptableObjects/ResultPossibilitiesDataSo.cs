@@ -10,9 +10,10 @@ namespace Data.ScriptableObjects
     {
         public List<SlotObjectType> TargetTypes;
         public int Possibility;
+        public string Name => string.Join(", ", TargetTypes);
         
     }
-    [CreateAssetMenu(fileName = "SO_ResultPossibilitiesData", menuName = "Data/ScriptableObjects/ResultPossibilitiesData")]
+    [CreateAssetMenu(fileName = "SO_ResultPossibilitiesData", menuName = "Data/ScriptableObjects/Properties/ResultPossibilitiesData", order = 0)]
     public class ResultPossibilitiesDataSo : ScriptableObject
     {
         [SerializeField] private List<ResultPossibility> _resultPossibilities;

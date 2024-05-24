@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: SO_ResultPossibilitiesData
   m_EditorClassIdentifier: 
   _resultPossibilities:
-  - TargetTypes: 030000000100000005000000
-    Possibility: 13
   - TargetTypes: 010000000100000002000000
     Possibility: 13
   - TargetTypes: 040000000400000003000000
@@ -22,6 +20,8 @@ MonoBehaviour:
   - TargetTypes: 010000000500000003000000
     Possibility: 13
   - TargetTypes: 050000000300000004000000
+    Possibility: 13
+  - TargetTypes: 030000000100000005000000
     Possibility: 13
   - TargetTypes: 030000000300000003000000
     Possibility: 9

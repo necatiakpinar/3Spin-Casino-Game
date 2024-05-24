@@ -1,26 +1,22 @@
 ﻿using System.Collections.Generic;
+using Addressables;
+using Data.ScriptableObjects;
+using Data.ScriptableObjects.Properties;
 using Enums;
-using SlotObjects;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Managers
 {
     public class GridManager : MonoBehaviour
     {
-        [SerializeField] private int _width = 3;
-        [SerializeField] private int _height = 3;
-        [SerializeField] private float _cellSize = 2.5f;
-        [SerializeField] private TileMono _tileMono;
-        [SerializeField] private List<NormalSlotObject> _normalSlotObjectsPF;
-        
+        private GridPropertiesDataSo _properties;
         private List<TileMono> _currentTiles;
         private Dictionary<int, List<TileMono>> _gridDictionary; // int: Column index, List<TileMono>: Tiles in the column
-        
         private int _currentCreatedSlotObjectIndex = 0;
         
-        private void Start()
+        private async void Start()
         {
+            _properties = await AddressableLoader.LoadAssetAsync<GridPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_GridPropertiesData));
             _currentTiles = new List<TileMono>();
             _gridDictionary = new Dictionary<int, List<TileMono>>();
             GenerateGrid();
@@ -28,11 +24,11 @@ namespace Managers
 
         private void GenerateGrid()
         {
-            for (int x = 0; x < _width; x++)
+            for (int x = 0; x < _properties.Width; x++)
             {
                 _currentCreatedSlotObjectIndex = 0;
                 _currentTiles = new List<TileMono>();
-                for (int y = 0; y < _height; y++)
+                for (int y = 0; y < _properties.Height; y++)
                 {
                     var createdTile = CreateCell(x, y);
                     _currentTiles.Add(createdTile);
@@ -47,11 +43,11 @@ namespace Managers
         private TileMono CreateCell(int x, int y)
         {
             var coordinates = new Vector2Int(x, y);
-            Vector3 position = new Vector3(x * _cellSize, y * _cellSize, 0);
-            var tile = Instantiate(_tileMono, transform);
+            Vector3 position = new Vector3(x * _properties.CellSize, y * _properties.CellSize, 0);
+            var tile = Instantiate(_properties.Tile, transform);
             tile.transform.localPosition = position;
             
-            var currentSlotObjectPF = _normalSlotObjectsPF[_currentCreatedSlotObjectIndex];
+            var currentSlotObjectPF = _properties.NormalSlotObjectsPF[_currentCreatedSlotObjectIndex];
             var slotObject = Instantiate(currentSlotObjectPF, tile.transform);
             _currentCreatedSlotObjectIndex++;
             

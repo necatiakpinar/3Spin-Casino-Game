@@ -35,6 +35,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - ScriptableObjects
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed31fc591ae834a02a9b0cc01bab94fc
+    m_Address: SO_GridPropertiesData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObjects
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83e112c7d1f5c4df9a43fa319b0971a5
+    m_Address: SO_SlotObjectProperties
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 477077eeba850b548aa94f4662af11bd, type: 2}
   m_SchemaSet:

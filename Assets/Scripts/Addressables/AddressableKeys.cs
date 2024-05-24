@@ -11,7 +11,11 @@
                 //Scriptable Objects
                 SO_ResultPossibilitiesData,
                 SO_SlotObjectCurrenciesData,
-                SO_SlotColumnPropertiesData
+                
+                //Properties
+                SO_SlotObjectProperties,
+                SO_SlotColumnPropertiesData,
+                SO_GridPropertiesData,
                 
             }
             public static string GetKey(AssetKeys key)

@@ -2,9 +2,9 @@
 using Miscs;
 using UnityEngine;
 
-namespace Data.ScriptableObjects
+namespace Data.ScriptableObjects.Properties
 {
-    [CreateAssetMenu(fileName = "SO_SlotColumnProperties", menuName = "SlotColumnProperties", order = 0)]
+    [CreateAssetMenu(fileName = "SO_SlotColumnProperties", menuName = "Data/ScriptableObjects/Properties/SlotColumnProperties", order = 0)]
     public class SlotColumnPropertiesDataSo : ScriptableObject
     {
         [SerializeField] private SerializableDictionary<SlotColumnStopType, int> _stopSpeeds;

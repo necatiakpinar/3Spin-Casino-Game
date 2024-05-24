@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.ScriptableObjects;
+using Data.ScriptableObjects.Properties;
 using Enums;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace Controllers
         private SlotColumnPropertiesDataSo _properties;
         private bool _isSlowingDown;
         private int _slowDownSpeed;
+        private bool _isSpinning;
 
         public SlotColumnController(List<TileMono> tiles, SlotColumnPropertiesDataSo properties)
         {
@@ -35,35 +37,35 @@ namespace Controllers
         {
             SetSlotObjectBlurVisibility(true);
             while (!_isSlowingDown)
-            {
                 await DoMovement(_properties.SpinSpeed);
-            }
         }
 
         public async Task SlowDown()
         {
             _isSlowingDown = true;
-            Debug.LogError(_targetSlotObjectType);
             await SlowDownToStop(_targetSlotObjectType);
         }
 
         private async Task SlowDownToStop(SlotObjectType objectType)
         {
+            await Task.Run(() => 
+            {
+                while (_isSpinning) {}
+            });
+            
             bool isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
-
             while (!isObjectInPosition)
             {
                 if (CheckProximityToTarget(objectType, 2))
                 {
-                    SetSlotObjectBlurVisibility(false); // Turn off blur as we start final approach
-                    _slowDownSpeed = Math.Max(_slowDownSpeed / 2, 1); // Slow down more as you get closer
+                    SetSlotObjectBlurVisibility(false); 
                 }
 
-                await DoMovement(_slowDownSpeed);
+                await DoMovement(_slowDownSpeed / 2);
                 isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
             }
 
-            SetSlotObjectBlurVisibility(false); // Ensure visibility is off when stopped
+            SetSlotObjectBlurVisibility(false); 
         }
 
         private bool CheckProximityToTarget(SlotObjectType objectType, int proximity)
@@ -74,6 +76,7 @@ namespace Controllers
 
         private async Task DoMovement(int speed)
         {
+            _isSpinning = true;
             for (int i = _tiles.Count - 1; i >= 0; i--)
             {
                 var tile = _tiles[i];
@@ -82,6 +85,7 @@ namespace Controllers
             }
 
             await Task.Delay(speed);
+            _isSpinning = false;
         }
 
         private bool IsSlotObjectInFirstTile(TileMono tile, SlotObjectType objectType)

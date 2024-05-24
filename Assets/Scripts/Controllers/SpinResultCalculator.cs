@@ -46,7 +46,7 @@ namespace Controllers
 
             Player.SaveDataToDisk();
 
-            // //show result intervals 
+            //show result intervals 
             for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
                 var result = Player.GameplayData.Results[i];

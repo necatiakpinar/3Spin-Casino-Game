@@ -6,6 +6,7 @@ using Addressables;
 using Controllers;
 using Data;
 using Data.ScriptableObjects;
+using Data.ScriptableObjects.Properties;
 using Enums;
 using Miscs;
 using UnityEngine;
@@ -18,7 +19,6 @@ namespace Managers
         private Dictionary<int, List<TileMono>> _gridDictionary;
         private ResultPossibilitiesDataSo _resultPossibilitiesData;
         private List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
-        private List<SpinResultHolder> _spinResultHolders = new List<SpinResultHolder>();
         private SpinResultCalculator _spinResultCalculator;
         private bool _isSpinning = false;
 
@@ -89,7 +89,7 @@ namespace Managers
                     else
                     {
                         _slotColumnControllers[i].Spin(spinResult[i], SlotColumnStopType.Fast);
-                        await Task.Delay(50);
+                        await Task.Delay(75); 
                     }
                 }
 

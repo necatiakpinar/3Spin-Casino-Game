@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40887ed800804a00b006f5cbd44da1d7, type: 3}
+  m_Name: SO_GridPropertiesData
+  m_EditorClassIdentifier: 
+  _width: 3
+  _height: 5
+  _cellSize: 2.5
+  _tile: {fileID: 2386465281815715328, guid: cd72c73719f83d84192eaa71b3be2657, type: 3}
+  _normalSlotObjectsPF:
+  - {fileID: 847747365246577724, guid: eb40880c23614f0439b128a059d4080e, type: 3}
+  - {fileID: 847747365246577724, guid: f65b00c1cfa278f4e827413e2a1e4c6b, type: 3}
+  - {fileID: 847747365246577724, guid: 97c685bc987df604ea40923cdc860116, type: 3}
+  - {fileID: 847747365246577724, guid: a3a93ef277414214f9d6814e66055599, type: 3}
+  - {fileID: 847747365246577724, guid: b4219c56f6e622245bd57d04d9fc668d, type: 3}
