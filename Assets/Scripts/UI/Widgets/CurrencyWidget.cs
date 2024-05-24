@@ -24,8 +24,8 @@ namespace UI.Widgets
 
         private void OnEnable()
         {
-            Action<object[]> onTilesCreated = (parameters) => UpdateCurrencyLabel((CurrencyType)parameters[0]);
-            EventManager.Subscribe(ActionType.OnCurrencyUpdated, onTilesCreated);
+            Action<object[]> onCurrencyUpdate = (parameters) => UpdateCurrencyLabel((CurrencyType)parameters[0]);
+            EventManager.Subscribe(ActionType.OnCurrencyUpdated, onCurrencyUpdate);
         }
 
         private void OnDisable()

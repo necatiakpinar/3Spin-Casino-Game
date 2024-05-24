@@ -31,8 +31,14 @@ namespace UI.Windows
 
         public void OnSpinButtonClicked()
         {
+            var isSpinning = EventManager.NotifyWithReturn<bool>(FunctionType.CheckIsSpinning);
+            if (isSpinning)
+            {
+                Debug.Log("Can't spin while spinning!");
+                return;
+            }
+
             EventManager.Notify(ActionType.OnSpinPressed);
-            Debug.Log("Spin button clicked!");
         }
     }
 }

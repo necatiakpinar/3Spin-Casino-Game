@@ -20,6 +20,8 @@
 
     public enum FunctionType
     {
+        None,
+        CheckIsSpinning
     }
 
     public enum VFXType

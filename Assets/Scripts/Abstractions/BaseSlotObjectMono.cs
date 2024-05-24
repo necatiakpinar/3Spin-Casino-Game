@@ -1,7 +1,6 @@
 ﻿using System;
 using Addressables;
 using Data.ScriptableObjects;
-using DefaultNamespace;
 using DG.Tweening;
 using Enums;
 using UnityEngine;

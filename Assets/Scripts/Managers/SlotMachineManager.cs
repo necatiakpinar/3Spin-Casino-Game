@@ -6,14 +6,14 @@ using Addressables;
 using Controllers;
 using Data;
 using Data.ScriptableObjects;
-using DefaultNamespace;
 using Enums;
+using Miscs;
 using UnityEngine;
 using Vfx;
 
 namespace Managers
 {
-    public class SlotMachineManager : MonoBehaviour
+    public class SlotMachineManager : Singleton<SlotMachineManager>
     {
         private Dictionary<int, List<TileMono>> _gridDictionary;
         private ResultPossibilitiesDataSo _resultPossibilitiesData;
@@ -22,6 +22,7 @@ namespace Managers
         private bool _isSpinning = false;
 
         private SlotObjectCurrenciesDataSo _slotObjectCurrenciesDataSo;
+        private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
 
         public void OnEnable()
         {
@@ -30,12 +31,16 @@ namespace Managers
 
             Action<object[]> onSpinPressed = (_) => Spin();
             EventManager.Subscribe(ActionType.OnSpinPressed, onSpinPressed);
+
+            EventManager.Subscribe<bool>(FunctionType.CheckIsSpinning, (_) => _isSpinning);
         }
 
         public void OnDestroy()
         {
             EventManager.Unsubscribe(ActionType.OnTilesCreated);
             EventManager.Unsubscribe(ActionType.OnSpinPressed);
+
+            EventManager.Unsubscribe(FunctionType.CheckIsSpinning);
         }
 
         private void Awake()
@@ -43,17 +48,20 @@ namespace Managers
             Player.LoadSaveDataFromDisk();
         }
 
-        private async void Start()
+        private async Task FetchData()
         {
             _slotObjectCurrenciesDataSo = await AddressableLoader.LoadAssetAsync<SlotObjectCurrenciesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectCurrenciesData));
+            _slotColumnPropertiesDataSo = await AddressableLoader.LoadAssetAsync<SlotColumnPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotColumnPropertiesData));
         }
 
         public async void OnTilesCreated(Dictionary<int, List<TileMono>> gridDictionary)
         {
+            await FetchData();
+
             _gridDictionary = gridDictionary;
             for (int i = 0; i < _gridDictionary.Count; i++)
             {
-                var slotColumnController = new SlotColumnController(_gridDictionary[i]);
+                var slotColumnController = new SlotColumnController(_gridDictionary[i], _slotColumnPropertiesDataSo);
                 _slotColumnControllers.Add(slotColumnController);
             }
 
@@ -63,7 +71,7 @@ namespace Managers
                 CalculateSpinResults();
         }
 
-        private void CalculateSpinResults()
+        public void CalculateSpinResults()
         {
             // Clear previous results
             Player.GameplayData.Results.Clear();
@@ -73,7 +81,7 @@ namespace Managers
             CalculateIntervalsForEachResult();
 
             // Prepare result intervals
-            Dictionary<List<SlotObjectType>, List<int>> resultIntervals = PrepareResultIntervals();
+            var resultIntervals = PrepareResultIntervals();
             for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
                 var result = Player.GameplayData.Results[i];
@@ -92,7 +100,7 @@ namespace Managers
 
             Player.SaveDataToDisk();
 
-            // //show result intervals
+            // //show result intervals 
             for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
                 var result = Player.GameplayData.Results[i];
@@ -159,6 +167,86 @@ namespace Managers
             }
 
             return slotObjectIntervals;
+        }
+
+        private Dictionary<List<SlotObjectType>, List<int>> PrepareResultIntervals()
+        {
+            Dictionary<List<SlotObjectType>, List<int>> resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
+
+            _spinResultHolders = new List<SpinResultHolder>();
+            for (int i = 0; i < Player.GameplayData.TotalSpinRatio; i++)
+            {
+                var resultData = GetMostAvailableResultData(i);
+                var spinResultHolder = new SpinResultHolder(i, resultData);
+                _spinResultHolders.Add(spinResultHolder);
+            }
+
+            RandomizeResultsInIntervals();
+
+            for (int i = 0; i < _spinResultHolders.Count; i++)
+            {
+                var spinResultHolder = _spinResultHolders[i];
+                if (spinResultHolder.Result != null)
+                {
+                    var result = spinResultHolder.Result;
+                    if (resultIntervals.ContainsKey(result.ResultObjects))
+                        resultIntervals[result.ResultObjects].Add(spinResultHolder.SpinIndex);
+                    else
+                        resultIntervals.Add(result.ResultObjects, new List<int> { spinResultHolder.SpinIndex });
+                }
+            }
+
+            //todo(necatiakpinar): Remove this 
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            {
+                var result = Player.GameplayData.Results[i];
+                var resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
+                Debug.LogError(resultIntervalIndexes.Count);
+            }
+
+            return resultIntervals;
+        }
+
+        private ResultData GetMostAvailableResultData(int resultHolderIndex)
+        {
+            var maxIntervalResultData = TryGetMaxIntervalResultData(resultHolderIndex);
+            if (maxIntervalResultData != null)
+                return maxIntervalResultData;
+
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            {
+                var result = Player.GameplayData.Results[i];
+                for (int j = 0; j < result.Intervals.Count; j++)
+                {
+                    var interval = result.Intervals[j];
+                    if (interval.MinIndex <= resultHolderIndex && interval.MaxIndex >= resultHolderIndex && !interval.IsAddedIntoResultHolder)
+                    {
+                        interval.IsAddedIntoResultHolder = true;
+                        return result;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private ResultData TryGetMaxIntervalResultData(int resultHolderIndex)
+        {
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            {
+                var result = Player.GameplayData.Results[i];
+                for (int j = 0; j < result.Intervals.Count; j++)
+                {
+                    var interval = result.Intervals[j];
+                    if (interval.MaxIndex == resultHolderIndex && !interval.IsAddedIntoResultHolder)
+                    {
+                        interval.IsAddedIntoResultHolder = true;
+                        return result;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private void RandomizeResultsInIntervals()
@@ -235,88 +323,6 @@ namespace Managers
             return targetResultCanSwap && resultCanSwap;
         }
 
-        private Dictionary<List<SlotObjectType>, List<int>> PrepareResultIntervals()
-        {
-            Dictionary<List<SlotObjectType>, List<int>> resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
-
-            _spinResultHolders = new List<SpinResultHolder>();
-            for (int i = 0; i < Player.GameplayData.TotalSpinRatio; i++)
-            {
-                var resultData = GetMostAvailableResultData(i);
-                var spinResultHolder = new SpinResultHolder(i, resultData);
-                _spinResultHolders.Add(spinResultHolder);
-            }
-
-            RandomizeResultsInIntervals();
-
-            for (int i = 0; i < _spinResultHolders.Count; i++)
-            {
-                var spinResultHolder = _spinResultHolders[i];
-                if (spinResultHolder.Result != null)
-                {
-                    var result = spinResultHolder.Result;
-                    if (resultIntervals.ContainsKey(result.ResultObjects))
-                        resultIntervals[result.ResultObjects].Add(spinResultHolder.SpinIndex);
-                    else
-                        resultIntervals.Add(result.ResultObjects, new List<int> { spinResultHolder.SpinIndex });
-                }
-            }
-
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            {
-                var result = Player.GameplayData.Results[i];
-                List<int> resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
-                Debug.LogError(resultIntervalIndexes.Count);
-            }
-
-            return resultIntervals;
-        }
-
-        private ResultData GetMostAvailableResultData(int resultHolderIndex)
-        {
-            var maxIntervalResultData = TryGetMaxIntervalResultData(resultHolderIndex);
-            if (maxIntervalResultData != null)
-                return maxIntervalResultData;
-
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            {
-                var result = Player.GameplayData.Results[i];
-                for (int j = 0; j < result.Intervals.Count; j++)
-                {
-                    var interval = result.Intervals[j];
-                    if (interval.MinIndex <= resultHolderIndex && interval.MaxIndex >= resultHolderIndex && !interval.IsAddedIntoResultHolder)
-                    {
-                        interval.IsAddedIntoResultHolder = true;
-                        return result;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private ResultData TryGetMaxIntervalResultData(int resultHolderIndex)
-        {
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            {
-                var result = Player.GameplayData.Results[i];
-                for (int j = 0; j < result.Intervals.Count; j++)
-                {
-                    var interval = result.Intervals[j];
-                    if (interval.MaxIndex == resultHolderIndex && !interval.IsAddedIntoResultHolder)
-                    {
-                        interval.IsAddedIntoResultHolder = true;
-                        return result;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Spin the slot machine
-        /// </summary>
         private async void Spin()
         {
             var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
@@ -329,36 +335,53 @@ namespace Managers
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
                 {
                     if (i == _slotColumnControllers.Count - 1) // Last column
-                        await _slotColumnControllers[i].Spin(spinResult[i]);
+                        _slotColumnControllers[i].Spin(spinResult[i], SlotColumnStopType.Slow);
                     else
                     {
-                        _slotColumnControllers[i].Spin(spinResult[i]);
+                        _slotColumnControllers[i].Spin(spinResult[i], SlotColumnStopType.Fast);
                         await Task.Delay(50);
                     }
                 }
 
-                var firstSlotObjectType = spinResult[0];
-                var isWin = spinResult.All(x => x == firstSlotObjectType);
-                if (isWin)
-                {
-                    var vfx = VFXPoolManager.Instance.SpawnFromPool<ParticleVFX>(VFXType.Coins, Vector3.zero, Quaternion.identity, false);
-                    if (vfx)
-                    {
-                        await vfx.Play();
-                        var currencyMultiplier = _slotObjectCurrenciesDataSo.GetSlotObjectCurrencyMultipliers(CurrencyType.Coin, firstSlotObjectType);
-                        var currency = Player.GameplayData.Currencies.FirstOrDefault(currency => currency.CurrencyType == CurrencyType.Coin);
-                        if (currency != null)
-                        {
-                            currency.AddAmount(currencyMultiplier.Amount);
-                            EventManager.Notify(ActionType.OnCurrencyUpdated, CurrencyType.Coin);
-                        }
+                await Task.Delay(1000);
 
-                        Player.SaveDataToDisk();
-                    }
+                for (int i = 0; i < _slotColumnControllers.Count; i++)
+                {
+                    await _slotColumnControllers[i].SlowDown();
                 }
+
+                await CheckForWin(spinResult);
             }
 
             _isSpinning = false;
+            UpdateData();
+        }
+
+        private async Task CheckForWin(List<SlotObjectType> spinResult)
+        {
+            var firstSlotObjectType = spinResult[0];
+            var isWin = spinResult.All(x => x == firstSlotObjectType);
+            if (isWin)
+            {
+                var vfx = VFXPoolManager.Instance.SpawnFromPool<ParticleVFX>(VFXType.Coins, Vector3.zero, Quaternion.identity, false);
+                if (vfx)
+                {
+                    await vfx.Play();
+                    var currencyMultiplier = _slotObjectCurrenciesDataSo.GetSlotObjectCurrencyMultipliers(CurrencyType.Coin, firstSlotObjectType);
+                    var currency = Player.GameplayData.Currencies.FirstOrDefault(currency => currency.CurrencyType == CurrencyType.Coin);
+                    if (currency != null)
+                    {
+                        currency.AddAmount(currencyMultiplier.Amount);
+                        EventManager.Notify(ActionType.OnCurrencyUpdated, CurrencyType.Coin);
+                    }
+
+                    Player.SaveDataToDisk();
+                }
+            }
+        }
+
+        private void UpdateData()
+        {
             if (Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio - 1) // Continue to next spin
                 Player.GameplayData.CurrentSpinIndex++;
             else // Recalculate results if all spins are done
