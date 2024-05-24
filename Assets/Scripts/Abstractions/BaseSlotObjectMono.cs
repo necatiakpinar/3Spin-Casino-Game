@@ -1,6 +1,4 @@
-﻿using System;
-using Addressables;
-using Data.ScriptableObjects;
+﻿using Addressables;
 using Data.ScriptableObjects.Properties;
 using DG.Tweening;
 using Enums;
