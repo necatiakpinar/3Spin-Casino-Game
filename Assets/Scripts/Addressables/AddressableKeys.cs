@@ -16,6 +16,7 @@
                 SO_SlotObjectProperties,
                 SO_SlotColumnPropertiesData,
                 SO_GridPropertiesData,
+                SO_SlotMachinePropertiesData,
                 
             }
             public static string GetKey(AssetKeys key)

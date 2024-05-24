@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,9 +22,11 @@ namespace Managers
         private SpinResultCalculator _spinResultCalculator;
         private bool _isSpinning = false;
 
+        private SlotMachinePropertiesDataSo _properties;
         private SlotObjectCurrenciesDataSo _slotObjectCurrenciesDataSo;
         private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
-
+        
+        
         public void OnEnable()
         {
             Action<object[]> onTilesCreated = (parameters) => OnTilesCreated((Dictionary<int, List<TileMono>>)parameters[0]);
@@ -51,6 +53,7 @@ namespace Managers
 
         private async Task FetchData()
         {
+            _properties = await AddressableLoader.LoadAssetAsync<SlotMachinePropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotMachinePropertiesData));
             _slotObjectCurrenciesDataSo = await AddressableLoader.LoadAssetAsync<SlotObjectCurrenciesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectCurrenciesData));
             _slotColumnPropertiesDataSo = await AddressableLoader.LoadAssetAsync<SlotColumnPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotColumnPropertiesData));
         }
@@ -81,24 +84,27 @@ namespace Managers
             {
                 var spinResult = Player.GameplayData.ResultDictionary[Player.GameplayData.CurrentSpinIndex];
                 Debug.LogError($"{Player.GameplayData.CurrentSpinIndex} {spinResult[0]} {spinResult[1]} {spinResult[2]}");
+                var isFirstTwoSame = spinResult[0] == spinResult[1];
                 _isSpinning = true;
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
                 {
                     if (i == _slotColumnControllers.Count - 1) // Last column
-                        _slotColumnControllers[i].Spin(spinResult[i], SlotColumnStopType.Slow);
+                    {
+                        var randomStopType = UnityEngine.Random.Range(0, 2) == 0 ? SlotColumnStopType.Slow : SlotColumnStopType.Regular;
+                        var stopType = isFirstTwoSame ? randomStopType : SlotColumnStopType.Fast;
+                        _slotColumnControllers[i].Spin(spinResult[i], stopType);
+                    }
                     else
                     {
-                        _slotColumnControllers[i].Spin(spinResult[i], SlotColumnStopType.Fast);
-                        await Task.Delay(75); 
+                        _slotColumnControllers[i].Spin(spinResult[i], _properties.FirstTwoStopType);
+                        await Task.Delay(_properties.SpinStartingDelay); 
                     }
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(_properties.SpinDuration);
 
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
-                {
                     await _slotColumnControllers[i].SlowDown();
-                }
 
                 await CheckForWin(spinResult);
             }
