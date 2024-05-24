@@ -17,7 +17,8 @@ namespace Abstractions
         private SpriteAtlas _blurredSpriteAtlas;
         private Sprite _normalSprite;
         private Sprite _blurredSprite;
-
+        private GridPropertiesDataSo _gridProperties;
+        
         public SlotObjectType Type => _type;
         public SlotObjectPropertiesDataSo Properties => _properties;
         
@@ -36,6 +37,7 @@ namespace Abstractions
             _properties = await AddressableLoader.LoadAssetAsync<SlotObjectPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectProperties));
             _normalSpriteAtlas = await AddressableLoader.LoadAssetAsync<SpriteAtlas>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SA_NormalSlotObjects));
             _blurredSpriteAtlas = await AddressableLoader.LoadAssetAsync<SpriteAtlas>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SA_BlurredSlotObjects));
+            _gridProperties = await AddressableLoader.LoadAssetAsync<GridPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_GridPropertiesData));
             
 
             _normalSprite = _normalSpriteAtlas.GetSprite(_type.ToString());
@@ -51,7 +53,7 @@ namespace Abstractions
 
         public void MoveToTile(TileMono targetTile, int speed)
         {
-            if (targetTile.Coordinates.y == 4) // todo(necatiakpinar): change this magic number!
+            if (targetTile.Coordinates.y == _gridProperties.Height - 1)
                 _spriteRenderer.enabled = false;
             else
                 _spriteRenderer.enabled = true;
