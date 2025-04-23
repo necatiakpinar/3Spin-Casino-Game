@@ -1,18 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
 using Addressables;
 using Controllers;
 using Data;
 using Data.ScriptableObjects;
-using Enums;
-using Miscs;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.RuntimeTests
+namespace Tests.PlayMode
 {
-    public class ResultCalculationsTest
+    public class ResultCalculationsPlayModeTest
     {
         [UnityTest]
         public IEnumerator CheckResultsHaveTotalSpinRatio()
@@ -54,7 +51,6 @@ namespace Tests.RuntimeTests
 
             var spinResultCalculator = new SpinResultCalculator(loadTask.Result);
             var resultDictionary = spinResultCalculator.Calculate();
-            //var resultDictionary = Player.GameplayData.ResultDictionary;
             Assert.AreEqual(100, resultDictionary.pairs.Count,
                 "The count of pairs should be exactly 100 for the test to pass.");
         }

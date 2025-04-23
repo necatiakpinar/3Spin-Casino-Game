@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Core.Logger;
 using Data;
 using Data.ScriptableObjects;
 using Enums;
 using Miscs;
-using UnityEngine;
 
 namespace Controllers
 {
     public class SpinResultCalculator
     {
-        private ResultPossibilitiesDataSo _resultPossibilitiesData;
         private List<SpinResultHolder> _spinResultHolders = new List<SpinResultHolder>();
+        private readonly ResultPossibilitiesDataSo _resultPossibilitiesData;
 
         public SpinResultCalculator(ResultPossibilitiesDataSo resultPossibilitiesData)
         {
@@ -42,19 +39,6 @@ namespace Controllers
             }
 
             return resultDictionary;
-
-//            Player.SaveDataToDisk(); 
-
-            //todo: REMOVE THIS   
-            // for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            // {
-            //     var result = Player.GameplayData.Results[i];
-            //     for (int j = 0; j < result.Intervals.Count; j++)
-            //     {
-            //         var interval = result.Intervals[j];
-            //         LoggerUtil.Log($"Result {i}: {result.Name} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
-            //     }
-            // }
         }
         private static void ClearResults()
         {
@@ -147,14 +131,7 @@ namespace Controllers
                         resultIntervals.Add(result.ResultObjects, new List<int> { spinResultHolder.SpinIndex });
                 }
             }
-
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            {
-                var result = Player.GameplayData.Results[i];
-                var resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
-                LoggerUtil.Log(resultIntervalIndexes.Count);
-            }
-
+            
             return resultIntervals;
         }
 
@@ -214,8 +191,6 @@ namespace Controllers
                     _spinResultHolders[i].Result = targetSpinResultHolder.Result;
                     targetSpinResultHolder.Result = tempResult;
                 }
-                else
-                    LoggerUtil.Log("No target result found");
             }
         }
 
