@@ -8,15 +8,16 @@ namespace Controllers
 {
     public class SlotColumnController
     {
-        private List<TileMono> _tiles;
-        private TileMono _middleSlot;
         private SlotObjectType _targetSlotObjectType;
-        private SlotColumnPropertiesDataSo _properties;
         private bool _isSlowingDown;
         private int _slowDownSpeed;
         private bool _isSpinning;
         private bool _shouldContinueSpinning;
 
+        private readonly SlotColumnPropertiesDataSo _properties;
+        private readonly List<TileMono> _tiles;
+        private readonly TileMono _middleSlot;
+        
         public SlotColumnController(List<TileMono> tiles, SlotColumnPropertiesDataSo properties)
         {
             _properties = properties;

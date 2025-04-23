@@ -20,7 +20,7 @@ namespace Data
             var data = JsonUtility.ToJson(_gameplayData, true);
             if (FileHelper.WriteToFile(_filePath, data))
             {
-                LoggerUtil.Log("GameplayData successfully saved.");
+                //LoggerUtil.Log("GameplayData successfully saved.");
             }
             else
             {

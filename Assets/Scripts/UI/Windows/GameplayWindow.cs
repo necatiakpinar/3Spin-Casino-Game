@@ -26,7 +26,7 @@ namespace UI.Windows
             _spinButton.AddAction(OnSpinButtonClicked);
         }
 
-        public void OnSpinButtonClicked()
+        private void OnSpinButtonClicked()
         {
             var isSpinning = EventManager.NotifyWithReturn<bool>(FunctionType.CheckIsSpinning);
             if (isSpinning)
