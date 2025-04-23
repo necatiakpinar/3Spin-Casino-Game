@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Data.ScriptableObjects;
 using Data.ScriptableObjects.Properties;
 using Enums;
@@ -25,7 +25,7 @@ namespace Controllers
             _middleSlot = _tiles[_properties.MiddleSlotIndex];
         }
 
-        public async Task Spin(SlotObjectType objectType, SlotColumnStopType stopType)
+        public async UniTask Spin(SlotObjectType objectType, SlotColumnStopType stopType)
         {
             _isSlowingDown = false;
             _targetSlotObjectType = objectType;
@@ -33,27 +33,25 @@ namespace Controllers
             await SpinForDuration();
         }
 
-        private async Task SpinForDuration()
+        private async UniTask SpinForDuration()
         {
             SetSlotObjectBlurVisibility(true);
             while (!_isSlowingDown)
                 await DoMovement(_properties.SpinSpeed);
         }
 
-        public async Task SlowDown()
+        public async UniTask SlowDown()
         {
             _isSlowingDown = true;
             await SlowDownToStop(_targetSlotObjectType);
         }
 
-        private async Task SlowDownToStop(SlotObjectType objectType)
+        private async UniTask SlowDownToStop(SlotObjectType objectType)
         {
-            await Task.Run(() => 
-            {
-                while (_isSpinning) {}
-            });
+            await UniTask.WaitUntil(() => !_isSpinning);
             
             bool isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
+            
             while (!isObjectInPosition)
             {
                 if (CheckProximityToTarget(objectType, 2))
@@ -63,6 +61,8 @@ namespace Controllers
 
                 await DoMovement(_slowDownSpeed / 2);
                 isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
+                
+                await UniTask.Yield();
             }
 
             SetSlotObjectBlurVisibility(false); 
@@ -74,17 +74,18 @@ namespace Controllers
             return Mathf.Abs(targetIndex - _properties.MiddleSlotIndex) <= proximity;
         }
 
-        private async Task DoMovement(int speed)
+        private async UniTask DoMovement(int speed)
         {
             _isSpinning = true;
+            
             for (int i = _tiles.Count - 1; i >= 0; i--)
             {
                 var tile = _tiles[i];
                 var targetTile = i - 1 >= 0 ? _tiles[i - 1] : _tiles[^1];
                 await tile.DropObjectToBottom(targetTile, speed);
             }
-
-            await Task.Delay(speed);
+            
+            await UniTask.Yield();
             _isSpinning = false;
         }
 

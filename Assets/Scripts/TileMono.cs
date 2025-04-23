@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Abstractions;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class TileMono : MonoBehaviour
@@ -16,9 +17,9 @@ public class TileMono : MonoBehaviour
         slotObjectMono.transform.localPosition = Vector2.zero;
     }
         
-    public async Task DropObjectToBottom(TileMono bottomTile, int speed)
+    public async UniTask DropObjectToBottom(TileMono bottomTile, int speed)
     {
-        _slotObjectMono.MoveToTile(bottomTile, speed);
+        await _slotObjectMono.MoveToTile(bottomTile, speed);
     }
 
     public void SetSlotObject(BaseSlotObjectMono slotObjectMono)
