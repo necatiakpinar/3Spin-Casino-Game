@@ -1,4 +1,5 @@
 ﻿using Abstractions;
+using Core.Logger;
 using Enums;
 using UI.Widgets;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace UI.Windows
             var isSpinning = EventManager.NotifyWithReturn<bool>(FunctionType.CheckIsSpinning);
             if (isSpinning)
             {
-                Debug.Log("Can't spin while spinning!");
+                LoggerUtil.Log("Can't spin while spinning!");
                 return;
             }
 

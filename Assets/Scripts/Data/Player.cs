@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Logger;
 using Helpers;
 using Miscs;
 using UnityEngine;
@@ -19,11 +20,11 @@ namespace Data
             var data = JsonUtility.ToJson(_gameplayData, true);
             if (FileHelper.WriteToFile(_filePath, data))
             {
-                //Debug.Log("GameplayData successfully saved.");
+                LoggerUtil.Log("GameplayData successfully saved.");
             }
             else
             {
-                Debug.LogWarning("GameplayData could not be saved.");
+                LoggerUtil.Log("GameplayData could not be saved.");
             }
         }
 
@@ -39,13 +40,13 @@ namespace Data
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError(e);
+                    LoggerUtil.LogError(e);
                     playerData = new GameplayData();
                 }
             }
             else
             {
-                Debug.Log("There isn't a disk data.");
+                LoggerUtil.Log("There isn't a disk data.");
                 playerData = new GameplayData();
             }
 

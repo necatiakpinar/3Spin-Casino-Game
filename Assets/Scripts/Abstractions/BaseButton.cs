@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Core.Logger;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -34,7 +35,7 @@ namespace Abstractions
             if (_buttonActions.Contains(actionToRemove))
                 _buttonActions.Remove(actionToRemove);
             else
-                Debug.LogError("Action could not be found!");
+                LoggerUtil.LogError("Action could not be found!");
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Addressables;
 using Controllers;
+using Core.Logger;
 using Cysharp.Threading.Tasks;
 using Data;
 using Data.ScriptableObjects;
@@ -90,7 +91,7 @@ namespace Managers
             if (isExist)
             {
                 var spinResult = Player.GameplayData.ResultDictionary[Player.GameplayData.CurrentSpinIndex];
-                Debug.LogError($"{Player.GameplayData.CurrentSpinIndex} {spinResult[0]} {spinResult[1]} {spinResult[2]}");
+                LoggerUtil.Log($"{Player.GameplayData.CurrentSpinIndex} {spinResult[0]} {spinResult[1]} {spinResult[2]}");
                 var isFirstTwoSame = spinResult[0] == spinResult[1];
                 _isSpinning = true;
                 for (int i = 0; i < _slotColumnControllers.Count; i++)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Core.Logger;
 using Data;
 using Data.ScriptableObjects;
 using Enums;
@@ -51,7 +52,7 @@ namespace Controllers
             //     for (int j = 0; j < result.Intervals.Count; j++)
             //     {
             //         var interval = result.Intervals[j];
-            //         Debug.Log($"Result {i}: {result.Name} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
+            //         LoggerUtil.Log($"Result {i}: {result.Name} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
             //     }
             // }
         }
@@ -147,13 +148,12 @@ namespace Controllers
                 }
             }
 
-            // //todo(necatiakpinar): Remove this 
-            // for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            // {
-            //     var result = Player.GameplayData.Results[i];
-            //     var resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
-            //     Debug.Log(resultIntervalIndexes.Count);
-            // }
+            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            {
+                var result = Player.GameplayData.Results[i];
+                var resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
+                LoggerUtil.Log(resultIntervalIndexes.Count);
+            }
 
             return resultIntervals;
         }
@@ -215,7 +215,7 @@ namespace Controllers
                     targetSpinResultHolder.Result = tempResult;
                 }
                 else
-                    Debug.Log("No target result found");
+                    LoggerUtil.Log("No target result found");
             }
         }
 

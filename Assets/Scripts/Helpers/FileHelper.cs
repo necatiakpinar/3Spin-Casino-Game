@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Core.Logger;
 using UnityEngine;
 
 namespace Helpers
@@ -15,7 +16,7 @@ namespace Helpers
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to write to {filePath} with exception {e}");
+                LoggerUtil.LogError($"Failed to write to {filePath} with exception {e}");
                 return false;
             }
         }
@@ -29,7 +30,7 @@ namespace Helpers
         {
             if (!File.Exists(filePath))
             {
-                Debug.Log("There is no file at the path");
+                LoggerUtil.Log("There is no file at the path");
                 result = null;
                 return false;
             }
@@ -41,7 +42,7 @@ namespace Helpers
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to read from {filePath} with exception {e}");
+                LoggerUtil.LogError($"Failed to read from {filePath} with exception {e}");
                 result = "";
                 return false;
             }
@@ -68,7 +69,7 @@ namespace Helpers
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to move file from {fullPath} to {newFullPath} with exception {e}");
+                LoggerUtil.LogError($"Failed to move file from {fullPath} to {newFullPath} with exception {e}");
                 return false;
             }
 
