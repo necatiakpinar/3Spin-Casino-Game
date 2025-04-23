@@ -53,8 +53,8 @@ namespace Tests.RuntimeTests
             Assert.IsNotNull(loadTask.Result);
 
             var spinResultCalculator = new SpinResultCalculator(loadTask.Result);
-            spinResultCalculator.Calculate();
-            var resultDictionary = Player.GameplayData.ResultDictionary;
+            var resultDictionary = spinResultCalculator.Calculate();
+            //var resultDictionary = Player.GameplayData.ResultDictionary;
             Assert.AreEqual(100, resultDictionary.pairs.Count,
                 "The count of pairs should be exactly 100 for the test to pass.");
         }

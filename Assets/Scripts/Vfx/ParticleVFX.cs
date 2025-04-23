@@ -8,7 +8,6 @@ namespace Vfx
     public class ParticleVFX : BaseVFX
     {
         private ParticleSystem _particleSystem;
-
         private readonly float _milliSeconds = 1000;
 
         public override void Init()

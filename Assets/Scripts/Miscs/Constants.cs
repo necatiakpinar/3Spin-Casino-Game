@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public static readonly string PLAYERDATA_FILENAME = "GameData";
-        public static readonly string SAVEFILE_EXTENSION = "NA";
+        public static readonly string PlayerDataFileName = "GameData";
+        public static readonly string SaveFileExtension = "NA";
     }
 }

@@ -1,9 +1,9 @@
- using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Addressables;
 using Controllers;
+using Cysharp.Threading.Tasks;
 using Data;
 using Data.ScriptableObjects;
 using Data.ScriptableObjects.Properties;
@@ -24,8 +24,7 @@ namespace Managers
         private SlotMachinePropertiesDataSo _properties;
         private SlotObjectCurrenciesDataSo _slotObjectCurrenciesDataSo;
         private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
-        
-        
+
         public void OnEnable()
         {
             Action<object[]> onTilesCreated = (parameters) => OnTilesCreated((Dictionary<int, List<TileMono>>)parameters[0]);
@@ -41,7 +40,6 @@ namespace Managers
         {
             EventManager.Unsubscribe(ActionType.OnTilesCreated);
             EventManager.Unsubscribe(ActionType.OnSpinPressed);
-
             EventManager.Unsubscribe(FunctionType.CheckIsSpinning);
         }
 
@@ -50,11 +48,16 @@ namespace Managers
             Player.LoadSaveDataFromDisk();
         }
 
-        private async Task FetchData()
+        private async UniTask FetchData()
         {
-            _properties = await AddressableLoader.LoadAssetAsync<SlotMachinePropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotMachinePropertiesData));
-            _slotObjectCurrenciesDataSo = await AddressableLoader.LoadAssetAsync<SlotObjectCurrenciesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectCurrenciesData));
-            _slotColumnPropertiesDataSo = await AddressableLoader.LoadAssetAsync<SlotColumnPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotColumnPropertiesData));
+            _properties = await AddressableLoader.LoadAssetAsync<SlotMachinePropertiesDataSo>(
+                AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotMachinePropertiesData));
+            _slotObjectCurrenciesDataSo =
+                await AddressableLoader.LoadAssetAsync<SlotObjectCurrenciesDataSo>(
+                    AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectCurrenciesData));
+            _slotColumnPropertiesDataSo =
+                await AddressableLoader.LoadAssetAsync<SlotColumnPropertiesDataSo>(
+                    AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotColumnPropertiesData));
         }
 
         public async void OnTilesCreated(Dictionary<int, List<TileMono>> gridDictionary)
@@ -68,14 +71,19 @@ namespace Managers
                 _slotColumnControllers.Add(slotColumnController);
             }
 
-            _resultPossibilitiesData = await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
+            _resultPossibilitiesData =
+                await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(
+                    AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
 
             _spinResultCalculator = new SpinResultCalculator(_resultPossibilitiesData);
             if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
-                _spinResultCalculator.Calculate();
+            {
+                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate();
+                Player.SaveDataToDisk();
+            }
         }
 
-        private async void Spin()
+        private async UniTask Spin()
         {
             var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
 
@@ -96,11 +104,11 @@ namespace Managers
                     else
                     {
                         _slotColumnControllers[i].Spin(spinResult[i], _properties.FirstTwoStopType);
-                        await Task.Delay(_properties.SpinStartingDelay); 
+                        await UniTask.Delay(_properties.SpinStartingDelay);
                     }
                 }
 
-                await Task.Delay(_properties.SpinDuration);
+                await UniTask.Delay(_properties.SpinDuration);
 
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
                     await _slotColumnControllers[i].SlowDown();
@@ -112,7 +120,7 @@ namespace Managers
             UpdateData();
         }
 
-        private async Task CheckForWin(List<SlotObjectType> spinResult)
+        private async UniTask CheckForWin(List<SlotObjectType> spinResult)
         {
             var firstSlotObjectType = spinResult[0];
             var isWin = spinResult.All(x => x == firstSlotObjectType);
@@ -142,7 +150,8 @@ namespace Managers
             else // Recalculate results if all spins are done
             {
                 Player.GameplayData.CurrentSpinIndex = 0;
-                _spinResultCalculator.Calculate();
+                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate();
+                Player.SaveDataToDisk();
             }
 
             Player.SaveDataToDisk();

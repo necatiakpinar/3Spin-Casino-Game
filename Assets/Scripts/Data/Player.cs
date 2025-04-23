@@ -12,7 +12,7 @@ namespace Data
         public static GameplayData GameplayData => _gameplayData;
 
         private static string _filePath =
-            $"{Application.persistentDataPath}/{Constants.PLAYERDATA_FILENAME}.{Constants.SAVEFILE_EXTENSION}";
+            $"{Application.persistentDataPath}/{Constants.PlayerDataFileName}.{Constants.SaveFileExtension}";
 
         public static void SaveDataToDisk()
         {

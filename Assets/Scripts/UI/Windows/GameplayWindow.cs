@@ -1,18 +1,14 @@
-﻿using System;
-using Abstractions;
+﻿using Abstractions;
 using Enums;
-using TMPro;
-using UI.Buttons;
 using UI.Widgets;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI.Windows
 {
     public class GameplayWindow : BaseWindow
     {
         [SerializeField] private CurrencyWidget _currencyWidget;
-        [SerializeField] private RegularButton _spinButton;
+        [SerializeField] private BaseButton _spinButton;
 
         private void Start()
         {

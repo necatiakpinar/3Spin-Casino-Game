@@ -3,6 +3,7 @@ using System.Linq;
 using Data;
 using Data.ScriptableObjects;
 using Enums;
+using Miscs;
 using UnityEngine;
 
 namespace Controllers
@@ -11,22 +12,19 @@ namespace Controllers
     {
         private ResultPossibilitiesDataSo _resultPossibilitiesData;
         private List<SpinResultHolder> _spinResultHolders = new List<SpinResultHolder>();
-        
+
         public SpinResultCalculator(ResultPossibilitiesDataSo resultPossibilitiesData)
         {
             _resultPossibilitiesData = resultPossibilitiesData;
         }
-        
-        public void Calculate()
-        {
-            // Clear previous results
-            Player.GameplayData.Results.Clear();
-            Player.GameplayData.ResultDictionary.Clear();
-            Player.SaveDataToDisk();
 
+        public SerializableDictionary<int, List<SlotObjectType>> Calculate()
+        {
+            SerializableDictionary<int, List<SlotObjectType>> resultDictionary = new SerializableDictionary<int, List<SlotObjectType>>();
+
+            ClearResults();
             CalculateIntervalsForEachResult();
 
-            // Prepare result intervals
             var resultIntervals = PrepareResultIntervals();
             for (int i = 0; i < Player.GameplayData.Results.Count; i++)
             {
@@ -36,26 +34,33 @@ namespace Controllers
                     var selectedIntervalIndex = resultIntervals[result.ResultObjects][j];
                     var resultInterval = result.Intervals[j];
                     resultInterval.SetSelected(selectedIntervalIndex);
-                    var isExist = Player.GameplayData.ResultDictionary.ContainsKey(selectedIntervalIndex);
+                    var isExist = resultDictionary.ContainsKey(selectedIntervalIndex);
                     if (!isExist)
-                        Player.GameplayData.ResultDictionary.Add(selectedIntervalIndex, result.ResultObjects);
-                    else
-                        Debug.Log("Interval is already exist");
+                        resultDictionary.Add(selectedIntervalIndex, result.ResultObjects);
                 }
             }
 
+            return resultDictionary;
+
+//            Player.SaveDataToDisk(); 
+
+            //todo: REMOVE THIS   
+            // for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            // {
+            //     var result = Player.GameplayData.Results[i];
+            //     for (int j = 0; j < result.Intervals.Count; j++)
+            //     {
+            //         var interval = result.Intervals[j];
+            //         Debug.Log($"Result {i}: {result.Name} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
+            //     }
+            // }
+        }
+        private static void ClearResults()
+        {
+
+            Player.GameplayData.Results.Clear();
+            Player.GameplayData.ResultDictionary.Clear();
             Player.SaveDataToDisk();
-
-            //show result intervals 
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            {
-                var result = Player.GameplayData.Results[i];
-                for (int j = 0; j < result.Intervals.Count; j++)
-                {
-                    var interval = result.Intervals[j];
-                    Debug.Log($"Result {i}: {result.Name} {interval.MinIndex} {interval.MaxIndex} Selected: {interval.SelectedIntervalIndex}");
-                }
-            }
         }
 
         private void CalculateIntervalsForEachResult()
@@ -142,13 +147,13 @@ namespace Controllers
                 }
             }
 
-            //todo(necatiakpinar): Remove this 
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
-            {
-                var result = Player.GameplayData.Results[i];
-                var resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
-                Debug.Log(resultIntervalIndexes.Count);
-            }
+            // //todo(necatiakpinar): Remove this 
+            // for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            // {
+            //     var result = Player.GameplayData.Results[i];
+            //     var resultIntervalIndexes = _spinResultHolders.Where(x => x.Result == result).Select(x => x.SpinIndex).ToList();
+            //     Debug.Log(resultIntervalIndexes.Count);
+            // }
 
             return resultIntervals;
         }
@@ -268,6 +273,6 @@ namespace Controllers
 
             return targetResultCanSwap && resultCanSwap;
         }
-        
+
     }
 }

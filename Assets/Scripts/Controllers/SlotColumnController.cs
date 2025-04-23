@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Data.ScriptableObjects;
 using Data.ScriptableObjects.Properties;
 using Enums;
 using UnityEngine;
@@ -17,6 +15,7 @@ namespace Controllers
         private bool _isSlowingDown;
         private int _slowDownSpeed;
         private bool _isSpinning;
+        private bool _shouldContinueSpinning;
 
         public SlotColumnController(List<TileMono> tiles, SlotColumnPropertiesDataSo properties)
         {
@@ -28,6 +27,7 @@ namespace Controllers
         public async UniTask Spin(SlotObjectType objectType, SlotColumnStopType stopType)
         {
             _isSlowingDown = false;
+            _shouldContinueSpinning = true;
             _targetSlotObjectType = objectType;
             _slowDownSpeed = _properties.StopSpeeds[stopType];
             await SpinForDuration();
@@ -36,13 +36,24 @@ namespace Controllers
         private async UniTask SpinForDuration()
         {
             SetSlotObjectBlurVisibility(true);
-            while (!_isSlowingDown)
-                await DoMovement(_properties.SpinSpeed);
+            try
+            {
+                while (_shouldContinueSpinning && !_isSlowingDown)
+                {
+                    await DoMovement(_properties.SpinSpeed);
+                    await UniTask.Yield();
+                }
+            }
+            finally
+            {
+                _shouldContinueSpinning = false;
+            }
         }
 
         public async UniTask SlowDown()
         {
             _isSlowingDown = true;
+            _shouldContinueSpinning = false;
             await SlowDownToStop(_targetSlotObjectType);
         }
 
@@ -51,21 +62,18 @@ namespace Controllers
             await UniTask.WaitUntil(() => !_isSpinning);
             
             bool isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
-            
             while (!isObjectInPosition)
             {
                 if (CheckProximityToTarget(objectType, 2))
-                {
-                    SetSlotObjectBlurVisibility(false); 
-                }
+                    SetSlotObjectBlurVisibility(false);
 
                 await DoMovement(_slowDownSpeed / 2);
                 isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
-                
+
                 await UniTask.Yield();
             }
 
-            SetSlotObjectBlurVisibility(false); 
+            SetSlotObjectBlurVisibility(false);
         }
 
         private bool CheckProximityToTarget(SlotObjectType objectType, int proximity)
@@ -77,15 +85,15 @@ namespace Controllers
         private async UniTask DoMovement(int speed)
         {
             _isSpinning = true;
-            
+
             for (int i = _tiles.Count - 1; i >= 0; i--)
             {
                 var tile = _tiles[i];
                 var targetTile = i - 1 >= 0 ? _tiles[i - 1] : _tiles[^1];
                 await tile.DropObjectToBottom(targetTile, speed);
             }
-            
-            await UniTask.Yield();
+
+            await UniTask.Delay(speed);
             _isSpinning = false;
         }
 

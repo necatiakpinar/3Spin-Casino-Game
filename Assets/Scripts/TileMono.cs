@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Abstractions;
+﻿using Abstractions;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -26,5 +25,4 @@ public class TileMono : MonoBehaviour
     {
         _slotObjectMono = slotObjectMono;
     }
-        
 }

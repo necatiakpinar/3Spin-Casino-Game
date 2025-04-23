@@ -65,8 +65,17 @@ namespace Abstractions
             var duration = speed / _properties._milliSeconds;
 
             transform.SetParent(targetTile.transform);
-            await transform.DOLocalMove(Vector3.zero, duration).SetEase(Ease.Linear).ToUniTask();
-            targetTile.SetSlotObject(this);
+            transform.DOLocalMove(Vector3.zero, duration).SetEase(Ease.Linear).OnComplete(() =>
+            {
+                targetTile.SetSlotObject(this);
+            });
+            // var tween = transform.DOLocalMove(Vector3.zero, duration).SetEase(Ease.Linear);
+            //
+            // // Wait for the animation to complete
+            // await tween.ToUniTask();
+            //
+            // // Set the slot object after the animation is fully complete
+            // targetTile.SetSlotObject(this);
         }
     }
 }
