@@ -19,11 +19,11 @@ namespace Managers
         private Dictionary<int, List<TileMono>> _gridDictionary;
         private ResultPossibilitiesDataSo _resultPossibilitiesData;
         private SpinResultCalculator _spinResultCalculator;
-        private bool _isSpinning = false;
         private SlotMachinePropertiesDataSo _properties;
         private SlotObjectCurrenciesDataSo _slotObjectCurrenciesDataSo;
         private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
-        
+        private bool _isSpinning = false;
+
         private readonly List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
 
         public void OnEnable()
@@ -61,7 +61,7 @@ namespace Managers
                     AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotColumnPropertiesData));
         }
 
-        public async void OnTilesCreated(Dictionary<int, List<TileMono>> gridDictionary)
+        private async void OnTilesCreated(Dictionary<int, List<TileMono>> gridDictionary)
         {
             await FetchData();
 
@@ -148,9 +148,9 @@ namespace Managers
 
         private void UpdateData()
         {
-            if (Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio - 1) // Continue to next spin
+            if (Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio - 1)
                 Player.GameplayData.CurrentSpinIndex++;
-            else // Recalculate results if all spins are done
+            else
             {
                 Player.GameplayData.CurrentSpinIndex = 0;
                 ClearResults();
@@ -160,7 +160,7 @@ namespace Managers
 
             Player.SaveDataToDisk();
         }
-        
+
         private static void ClearResults()
         {
             Player.GameplayData.Results.Clear();

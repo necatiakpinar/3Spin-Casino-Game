@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SlotObjects;
+using Abstractions;
 using UnityEngine;
 
 namespace Data.ScriptableObjects.Properties
@@ -11,12 +11,12 @@ namespace Data.ScriptableObjects.Properties
         [SerializeField] private int _height = 3;
         [SerializeField] private float _cellSize = 2.5f;
         [SerializeField] private TileMono _tile;
-        [SerializeField] private List<NormalSlotObject> _normalSlotObjectsPF;
+        [SerializeField] private List<SlotObjectMono> _normalSlotObjectsPF;
         
         public int Width => _width;
         public int Height => _height;
         public float CellSize => _cellSize;
         public TileMono Tile => _tile;
-        public List<NormalSlotObject> NormalSlotObjectsPF => _normalSlotObjectsPF;
+        public List<SlotObjectMono> NormalSlotObjectsPF => _normalSlotObjectsPF;
     }
 }

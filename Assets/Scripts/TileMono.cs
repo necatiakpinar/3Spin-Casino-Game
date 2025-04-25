@@ -5,11 +5,11 @@ using UnityEngine;
 public class TileMono : MonoBehaviour
 {
     private Vector2Int _coordinates;
-    private BaseSlotObjectMono _slotObjectMono;
+    private SlotObjectMono _slotObjectMono;
     public Vector2Int Coordinates => _coordinates;
-    public BaseSlotObjectMono SlotObjectMono => _slotObjectMono;
+    public SlotObjectMono SlotObjectMono => _slotObjectMono;
         
-    public void Init(Vector2Int coordinates, BaseSlotObjectMono slotObjectMono)
+    public void Init(Vector2Int coordinates, SlotObjectMono slotObjectMono)
     {
         _coordinates = coordinates;
         _slotObjectMono = slotObjectMono;
@@ -21,7 +21,7 @@ public class TileMono : MonoBehaviour
         await _slotObjectMono.MoveToTile(bottomTile, speed);
     }
 
-    public void SetSlotObject(BaseSlotObjectMono slotObjectMono)
+    public void SetSlotObject(SlotObjectMono slotObjectMono)
     {
         _slotObjectMono = slotObjectMono;
     }

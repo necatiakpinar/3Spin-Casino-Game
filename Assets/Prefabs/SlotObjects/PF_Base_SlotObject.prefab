@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3981153758522870934}
   - component: {fileID: 4683105214180278721}
-  - component: {fileID: 1782053780284542149}
+  - component: {fileID: 4771016843961699475}
   m_Layer: 0
   m_Name: PF_Base_SlotObject
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 1
   m_SpriteSortPoint: 0
---- !u!114 &1782053780284542149
+--- !u!114 &4771016843961699475
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 4828698287812477262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b706d777d7c348b594c167c197debe0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 8fdf966b82a04786930a1cf30548fb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 0
+  _properties: {fileID: 11400000, guid: 83e112c7d1f5c4df9a43fa319b0971a5, type: 2}

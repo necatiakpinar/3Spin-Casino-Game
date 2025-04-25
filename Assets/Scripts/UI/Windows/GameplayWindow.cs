@@ -10,11 +10,11 @@ namespace UI.Windows
     public class GameplayWindow : BaseWindow
     {
         [SerializeField] private CurrencyWidget _currencyWidget;
-        [SerializeField] private BaseButton _spinButton;
+        [SerializeField] private CustomButton _spinButton;
 
         private void Start()
         {
-            Init(); //For now...
+            Init(); //For now...(UI Manager required in full project)
         }
 
         public override void Init(BaseWindowParameters windowParameters = null)

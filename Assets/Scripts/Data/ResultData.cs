@@ -34,7 +34,6 @@ namespace Data
         public ResultInterval GetInterval(int spinIndex)
         {
             foreach (var interval in _intervals)
-
                 if (spinIndex >= interval.MinIndex && spinIndex <= interval.MaxIndex)
                     return interval;
 

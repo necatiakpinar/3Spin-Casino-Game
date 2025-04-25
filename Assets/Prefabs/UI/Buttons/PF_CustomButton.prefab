@@ -146,9 +146,9 @@ GameObject:
   - component: {fileID: 706650123401944812}
   - component: {fileID: 8633126225384620861}
   - component: {fileID: 3508302793302375050}
-  - component: {fileID: 8086477642871796867}
+  - component: {fileID: 4753420248103875584}
   m_Layer: 5
-  m_Name: PF_RegularButton
+  m_Name: PF_CustomButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8086477642871796867
+--- !u!114 &4753420248103875584
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,7 +265,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 5251224904294794250}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fae49924af24944b0065b9323ca2d58, type: 3}
+  m_Script: {fileID: 11500000, guid: 6a0f203e4cae426797dc61cad036cf76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _button: {fileID: 0}

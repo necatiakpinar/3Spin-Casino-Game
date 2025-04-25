@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace Abstractions
 {
     [RequireComponent(typeof(Button))]
-    public abstract class BaseButton : MonoBehaviour
+    public class CustomButton : MonoBehaviour
     {
         private Button _button;
 

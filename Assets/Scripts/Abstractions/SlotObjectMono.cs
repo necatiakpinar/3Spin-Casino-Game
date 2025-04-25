@@ -9,7 +9,7 @@ using UnityEngine.U2D;
 
 namespace Abstractions
 {
-    public abstract class BaseSlotObjectMono : MonoBehaviour
+    public class SlotObjectMono : MonoBehaviour
     {
         [SerializeField] private SlotObjectType _type;
         [SerializeField] private SlotObjectPropertiesDataSo _properties;

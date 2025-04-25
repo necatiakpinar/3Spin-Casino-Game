@@ -47,7 +47,6 @@ namespace Controllers
             return resultDictionary;
         }
 
-
         private void CalculateIntervalsForEachResult()
         {
             SortResultPossibilities(_resultPossibilityProvider.GetResultPossibilities());
@@ -61,7 +60,7 @@ namespace Controllers
             }
         }
 
-        public void SortResultPossibilities(List<ResultPossibility> resultPossibilities)
+        private void SortResultPossibilities(List<ResultPossibility> resultPossibilities)
         {
             bool swapped;
             do
@@ -78,7 +77,7 @@ namespace Controllers
             } while (swapped);
         }
 
-        public List<ResultInterval> CalculateAndGetIntervals(int totalSpins, int numberOfIntervals)
+        private List<ResultInterval> CalculateAndGetIntervals(int totalSpins, int numberOfIntervals)
         {
             var slotObjectIntervals = new List<ResultInterval>();
             int intervalSize = totalSpins / numberOfIntervals;

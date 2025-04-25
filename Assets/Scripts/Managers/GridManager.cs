@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Addressables;
-using Data.ScriptableObjects;
 using Data.ScriptableObjects.Properties;
 using Enums;
 using UnityEngine;
@@ -37,23 +36,21 @@ namespace Managers
             }
             
             EventManager.Notify(ActionType.OnTilesCreated, _gridDictionary);
-            
         }
 
         private TileMono CreateCell(int x, int y)
         {
             var coordinates = new Vector2Int(x, y);
-            Vector3 position = new Vector3(x * _properties.CellSize, y * _properties.CellSize, 0);
+            var position = new Vector3(x * _properties.CellSize, y * _properties.CellSize, 0);
             var tile = Instantiate(_properties.Tile, transform);
             tile.transform.localPosition = position;
             
-            var currentSlotObjectPF = _properties.NormalSlotObjectsPF[_currentCreatedSlotObjectIndex];
-            var slotObject = Instantiate(currentSlotObjectPF, tile.transform);
+            var currentSlotObjectPf = _properties.NormalSlotObjectsPF[_currentCreatedSlotObjectIndex];
+            var slotObject = Instantiate(currentSlotObjectPf, tile.transform);
             _currentCreatedSlotObjectIndex++;
             
             tile.Init(coordinates, slotObject);
             return tile;
-
         }
     }
 }

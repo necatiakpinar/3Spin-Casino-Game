@@ -17,14 +17,9 @@ namespace Data
         public static void SaveDataToDisk()
         {
             var data = JsonUtility.ToJson(_gameplayData, true);
-            if (FileHelper.WriteToFile(_filePath, data))
-            {
-                //LoggerUtil.Log("GameplayData successfully saved.");
-            }
-            else
-            {
+            if (!FileHelper.WriteToFile(_filePath, data))
                 LoggerUtil.Log("GameplayData could not be saved.");
-            }
+
         }
 
         public static void LoadSaveDataFromDisk()

@@ -50,7 +50,6 @@
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\SlotObjectCurrenciesDataSo.cs" />
     <Compile Include="Assets\Scripts\Data\GameplayData.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\GridPropertiesDataSo.cs" />
-    <Compile Include="Assets\Scripts\SlotObjects\NormalSlotObject.cs" />
     <Compile Include="Assets\Scripts\Vfx\ParticleVFX.cs" />
     <Compile Include="Assets\Scripts\Addressables\AddressableLoader.cs" />
     <Compile Include="Assets\Scripts\UI\Windows\GameplayWindow.cs" />
@@ -58,8 +57,8 @@
     <Compile Include="Assets\Scripts\UI\Buttons\RegularButton.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseCurrency.cs" />
     <Compile Include="Assets\Scripts\UI\Widgets\CurrencyWidget.cs" />
+    <Compile Include="Assets\Scripts\Abstractions\SlotObjectMono.cs" />
     <Compile Include="Assets\Scripts\Managers\VFXPoolManager.cs" />
-    <Compile Include="Assets\Scripts\Abstractions\BaseSlotObjectMono.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\ResultPossibilitiesDataSo.cs" />
     <Compile Include="Assets\Scripts\Miscs\Constants.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseVFX.cs" />
@@ -83,6 +82,7 @@
     <Compile Include="Assets\Scripts\Abstractions\BaseWindow.cs" />
     <Compile Include="Assets\Scripts\Data\Currencies\CoinCurrency.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\SlotColumnPropertiesDataSo.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IResultPossibilityProvider.cs" />
     <Compile Include="Assets\Scripts\Data\Player.cs" />
     <Compile Include="Assets\Scripts\Helpers\FileHelper.cs" />
     <None Include="Assets\Scripts\GameTime.asmdef" />
@@ -768,9 +768,6 @@
       <Project>{1acb9080-2e81-ed44-cce5-a8cfa5fdc961}</Project>
       <Name>UniTask.DOTween</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Scripts\Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
