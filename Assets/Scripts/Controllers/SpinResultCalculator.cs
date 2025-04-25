@@ -2,31 +2,37 @@
 using Data;
 using Data.ScriptableObjects;
 using Enums;
+using Interfaces;
 using Miscs;
 
 namespace Controllers
 {
     public class SpinResultCalculator
     {
-        private List<SpinResultHolder> _spinResultHolders = new List<SpinResultHolder>();
-        private readonly ResultPossibilitiesDataSo _resultPossibilitiesData;
+        private List<SpinResultHolder> _spinResultHolders;
+        
+        private readonly List<ResultData> _resultDataList;
+        private readonly int _totalSpinRatio;
+        private readonly IResultPossibilityProvider _resultPossibilityProvider;
 
-        public SpinResultCalculator(ResultPossibilitiesDataSo resultPossibilitiesData)
+        public SpinResultCalculator(IResultPossibilityProvider resultPossibilityProvider, int totalSpinRatio = 100)
         {
-            _resultPossibilitiesData = resultPossibilitiesData;
+            _spinResultHolders = new List<SpinResultHolder>();
+            _resultDataList = new List<ResultData>();
+            _totalSpinRatio = totalSpinRatio;
+            _resultPossibilityProvider = resultPossibilityProvider;
         }
 
-        public SerializableDictionary<int, List<SlotObjectType>> Calculate()
+        public SerializableDictionary<int, List<SlotObjectType>> Calculate(out List<ResultData> resultDataList)
         {
-            SerializableDictionary<int, List<SlotObjectType>> resultDictionary = new SerializableDictionary<int, List<SlotObjectType>>();
-
-            ClearResults();
+            var resultDictionary = new SerializableDictionary<int, List<SlotObjectType>>();
             CalculateIntervalsForEachResult();
+            resultDataList = _resultDataList;
 
             var resultIntervals = PrepareResultIntervals();
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            for (int i = 0; i < _resultDataList.Count; i++)
             {
-                var result = Player.GameplayData.Results[i];
+                var result = _resultDataList[i];
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var selectedIntervalIndex = resultIntervals[result.ResultObjects][j];
@@ -40,40 +46,32 @@ namespace Controllers
 
             return resultDictionary;
         }
-        private static void ClearResults()
-        {
 
-            Player.GameplayData.Results.Clear();
-            Player.GameplayData.ResultDictionary.Clear();
-            Player.SaveDataToDisk();
-        }
 
         private void CalculateIntervalsForEachResult()
         {
-            SortResultPossibilities(_resultPossibilitiesData.ResultPossibilities);
+            SortResultPossibilities(_resultPossibilityProvider.GetResultPossibilities());
 
-            for (int i = 0; i < _resultPossibilitiesData.ResultPossibilities.Count; i++)
+            for (int i = 0; i < _resultPossibilityProvider.GetResultPossibilities().Count; i++)
             {
-                var targetPossibilityData = _resultPossibilitiesData.ResultPossibilities[i];
-                var slotIntervals = CalculateAndGetIntervals(Player.GameplayData.TotalSpinRatio, targetPossibilityData.Possibility);
+                var targetPossibilityData = _resultPossibilityProvider.GetResultPossibilities()[i];
+                var slotIntervals = CalculateAndGetIntervals(_totalSpinRatio, targetPossibilityData.Possibility);
                 var resultData = new ResultData(targetPossibilityData.TargetTypes, slotIntervals, targetPossibilityData.Possibility);
-                Player.GameplayData.Results.Add(resultData);
+                _resultDataList.Add(resultData);
             }
         }
 
-        public void SortResultPossibilities(List<ResultPossibility> _resultPossibilities)
+        public void SortResultPossibilities(List<ResultPossibility> resultPossibilities)
         {
             bool swapped;
             do
             {
                 swapped = false;
-                for (int i = 0; i < _resultPossibilities.Count - 1; i++)
+                for (int i = 0; i < resultPossibilities.Count - 1; i++)
                 {
-                    if (_resultPossibilities[i].Possibility < _resultPossibilities[i + 1].Possibility)
+                    if (resultPossibilities[i].Possibility < resultPossibilities[i + 1].Possibility)
                     {
-                        var temp = _resultPossibilities[i];
-                        _resultPossibilities[i] = _resultPossibilities[i + 1];
-                        _resultPossibilities[i + 1] = temp;
+                        (resultPossibilities[i], resultPossibilities[i + 1]) = (resultPossibilities[i + 1], resultPossibilities[i]);
                         swapped = true;
                     }
                 }
@@ -110,7 +108,7 @@ namespace Controllers
             Dictionary<List<SlotObjectType>, List<int>> resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
 
             _spinResultHolders = new List<SpinResultHolder>();
-            for (int i = 0; i < Player.GameplayData.TotalSpinRatio; i++)
+            for (int i = 0; i < _totalSpinRatio; i++)
             {
                 var resultData = GetMostAvailableResultData(i);
                 var spinResultHolder = new SpinResultHolder(i, resultData);
@@ -131,7 +129,7 @@ namespace Controllers
                         resultIntervals.Add(result.ResultObjects, new List<int> { spinResultHolder.SpinIndex });
                 }
             }
-            
+
             return resultIntervals;
         }
 
@@ -141,9 +139,9 @@ namespace Controllers
             if (maxIntervalResultData != null)
                 return maxIntervalResultData;
 
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            for (int i = 0; i < _resultDataList.Count; i++)
             {
-                var result = Player.GameplayData.Results[i];
+                var result = _resultDataList[i];
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var interval = result.Intervals[j];
@@ -160,9 +158,9 @@ namespace Controllers
 
         private ResultData TryGetMaxIntervalResultData(int resultHolderIndex)
         {
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            for (int i = 0; i < _resultDataList.Count; i++)
             {
-                var result = Player.GameplayData.Results[i];
+                var result = _resultDataList[i];
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var interval = result.Intervals[j];

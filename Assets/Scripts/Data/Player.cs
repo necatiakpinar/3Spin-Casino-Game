@@ -1,5 +1,4 @@
 ﻿using System;
-using Core.Logger;
 using Helpers;
 using Miscs;
 using UnityEngine;

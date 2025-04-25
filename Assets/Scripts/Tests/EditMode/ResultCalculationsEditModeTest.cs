@@ -45,8 +45,8 @@ namespace Tests.EditMode
         {
             Assert.IsNotNull(_resultData, "Result data should not be null");
 
-            var spinResultCalculator = new SpinResultCalculator(_resultData);
-            var resultDictionary = spinResultCalculator.Calculate();
+            var spinResultCalculator = new SpinResultCalculator(_resultData, Player.GameplayData.TotalSpinRatio);
+            var resultDictionary = spinResultCalculator.Calculate(out var results);
 
             Assert.AreEqual(Player.GameplayData.TotalSpinRatio,
                 resultDictionary.pairs.Count,
@@ -59,11 +59,11 @@ namespace Tests.EditMode
             Assert.IsNotNull(_resultData, "Result data should not be null");
 
             var spinResultCalculator = new SpinResultCalculator(_resultData);
-            var resultDictionary = spinResultCalculator.Calculate();
+            var resultDictionary = spinResultCalculator.Calculate(out var results);
 
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            for (int i = 0; i < results.Count; i++)
             {
-                var result = Player.GameplayData.Results[i];
+                var result = results[i];
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var interval = result.Intervals[j];
@@ -82,11 +82,11 @@ namespace Tests.EditMode
             Assert.IsNotNull(_resultData, "Result data should not be null");
 
             var spinResultCalculator = new SpinResultCalculator(_resultData);
-            spinResultCalculator.Calculate();
+            spinResultCalculator.Calculate(out var results);
 
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            for (int i = 0; i < results.Count; i++)
             {
-                var result = Player.GameplayData.Results[i];
+                var result = results[i];
                 TestContext.WriteLine($"Result {i}: {result.Name} Created: {result.Intervals.Count} Expected Amount {result.Possibility}");
                 Assert.AreEqual(result.Intervals.Count,
                     result.Possibility,
@@ -100,13 +100,13 @@ namespace Tests.EditMode
             Assert.IsNotNull(_resultData, "Result data should not be null");
 
             var spinResultCalculator = new SpinResultCalculator(_resultData);
-            spinResultCalculator.Calculate();
+            spinResultCalculator.Calculate(out var results);
 
             var usedIntervalIndexes = new Dictionary<int, string>();
 
-            for (int i = 0; i < Player.GameplayData.Results.Count; i++)
+            for (int i = 0; i < results.Count; i++)
             {
-                var result = Player.GameplayData.Results[i];
+                var result = results[i];
                 for (int j = 0; j < result.Intervals.Count; j++)
                 {
                     var interval = result.Intervals[j];

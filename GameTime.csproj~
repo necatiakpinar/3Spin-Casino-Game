@@ -77,7 +77,6 @@
     <Compile Include="Assets\Scripts\Managers\GridManager.cs" />
     <Compile Include="Assets\Scripts\TileMono.cs" />
     <Compile Include="Assets\Scripts\Managers\EventManager.cs" />
-    <Compile Include="Assets\Scripts\Core\Logger\LoggerExtensions.cs" />
     <Compile Include="Assets\Scripts\Controllers\SlotColumnController.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseButton.cs" />
     <Compile Include="Assets\Scripts\Addressables\AddressableKeys.cs" />
@@ -769,6 +768,9 @@
       <Project>{1acb9080-2e81-ed44-cce5-a8cfa5fdc961}</Project>
       <Name>UniTask.DOTween</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Scripts\Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

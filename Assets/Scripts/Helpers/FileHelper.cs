@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Core.Logger;
 using UnityEngine;
 
 namespace Helpers

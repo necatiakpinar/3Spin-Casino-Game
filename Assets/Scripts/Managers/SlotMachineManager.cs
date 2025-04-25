@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Addressables;
 using Controllers;
-using Core.Logger;
 using Cysharp.Threading.Tasks;
 using Data;
 using Data.ScriptableObjects;
 using Data.ScriptableObjects.Properties;
 using Enums;
+using Helpers;
 using UnityEngine;
 using Vfx;
 
@@ -18,13 +18,13 @@ namespace Managers
     {
         private Dictionary<int, List<TileMono>> _gridDictionary;
         private ResultPossibilitiesDataSo _resultPossibilitiesData;
-        private List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
         private SpinResultCalculator _spinResultCalculator;
         private bool _isSpinning = false;
-
         private SlotMachinePropertiesDataSo _properties;
         private SlotObjectCurrenciesDataSo _slotObjectCurrenciesDataSo;
         private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
+        
+        private readonly List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
 
         public void OnEnable()
         {
@@ -76,10 +76,12 @@ namespace Managers
                 await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(
                     AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
 
-            _spinResultCalculator = new SpinResultCalculator(_resultPossibilitiesData);
+            _spinResultCalculator = new SpinResultCalculator(_resultPossibilitiesData, Player.GameplayData.TotalSpinRatio);
             if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
             {
-                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate();
+                ClearResults();
+                Player.GameplayData.CurrentSpinIndex = 0; // Careful
+                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate(out Player.GameplayData.Results);
                 Player.SaveDataToDisk();
             }
         }
@@ -151,10 +153,18 @@ namespace Managers
             else // Recalculate results if all spins are done
             {
                 Player.GameplayData.CurrentSpinIndex = 0;
-                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate();
+                ClearResults();
+                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate(out Player.GameplayData.Results);
                 Player.SaveDataToDisk();
             }
 
+            Player.SaveDataToDisk();
+        }
+        
+        private static void ClearResults()
+        {
+            Player.GameplayData.Results.Clear();
+            Player.GameplayData.ResultDictionary.Clear();
             Player.SaveDataToDisk();
         }
     }

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Core.Logger;
+using Helpers;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 

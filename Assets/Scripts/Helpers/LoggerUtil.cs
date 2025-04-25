@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Abstractions;
 using Loggers;
 
-namespace Core.Logger
+namespace Helpers
 {
     public static class LoggerUtil
     {

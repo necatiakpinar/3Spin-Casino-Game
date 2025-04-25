@@ -1,4 +1,5 @@
-﻿using Addressables;
+﻿using System.Threading.Tasks;
+using Addressables;
 using Data.ScriptableObjects.Properties;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
@@ -33,7 +34,16 @@ namespace Abstractions
             Init();
         }
 
-        protected virtual async void Init()
+        protected async virtual void Init()
+        {
+            await LoadAddressables();
+            
+            _normalSprite = _normalSpriteAtlas.GetSprite(_type.ToString());
+            _blurredSprite = _blurredSpriteAtlas.GetSprite(_type + _properties.BlurredSuffix);
+
+            SetSprite(false);
+        }
+        private async Task LoadAddressables()
         {
             _properties = await AddressableLoader.LoadAssetAsync<SlotObjectPropertiesDataSo>(
                 AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectProperties));
@@ -42,12 +52,6 @@ namespace Abstractions
                 await AddressableLoader.LoadAssetAsync<SpriteAtlas>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SA_BlurredSlotObjects));
             _gridProperties =
                 await AddressableLoader.LoadAssetAsync<GridPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_GridPropertiesData));
-
-
-            _normalSprite = _normalSpriteAtlas.GetSprite(_type.ToString());
-            _blurredSprite = _blurredSpriteAtlas.GetSprite(_type + _properties.BlurredSuffix);
-
-            SetSprite(false);
         }
 
         public void SetSprite(bool isBlurred)
@@ -69,13 +73,6 @@ namespace Abstractions
             {
                 targetTile.SetSlotObject(this);
             });
-            // var tween = transform.DOLocalMove(Vector3.zero, duration).SetEase(Ease.Linear);
-            //
-            // // Wait for the animation to complete
-            // await tween.ToUniTask();
-            //
-            // // Set the slot object after the animation is fully complete
-            // targetTile.SetSlotObject(this);
         }
     }
 }
