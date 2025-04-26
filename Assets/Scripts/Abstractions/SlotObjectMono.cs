@@ -31,19 +31,18 @@ namespace Abstractions
 
         private async void Start()
         {
-            Init();
+            await Init();
         }
 
-        protected async virtual void Init()
+        private async UniTask Init()
         {
             await LoadAddressables();
             
             _normalSprite = _normalSpriteAtlas.GetSprite(_type.ToString());
             _blurredSprite = _blurredSpriteAtlas.GetSprite(_type + _properties.BlurredSuffix);
-
             SetSprite(false);
         }
-        private async Task LoadAddressables()
+        private async UniTask LoadAddressables()
         {
             _properties = await AddressableLoader.LoadAssetAsync<SlotObjectPropertiesDataSo>(
                 AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotObjectProperties));
@@ -56,6 +55,9 @@ namespace Abstractions
 
         public void SetSprite(bool isBlurred)
         {
+            if (_spriteRenderer == null)
+                _spriteRenderer = GetComponent<SpriteRenderer>();
+            
             _spriteRenderer.sprite = isBlurred ? _blurredSprite : _normalSprite;
         }
 
@@ -66,13 +68,15 @@ namespace Abstractions
             else
                 _spriteRenderer.enabled = true;
 
-            var duration = speed / _properties._milliSeconds;
+            var duration = speed / _properties.MilliSeconds;
 
             transform.SetParent(targetTile.transform);
             transform.DOLocalMove(Vector3.zero, duration).SetEase(Ease.Linear).OnComplete(() =>
             {
                 targetTile.SetSlotObject(this);
             });
+
+            await UniTask.CompletedTask;
         }
     }
 }

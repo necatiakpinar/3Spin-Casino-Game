@@ -80,7 +80,7 @@ namespace Managers
             if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
             {
                 ClearResults();
-                Player.GameplayData.CurrentSpinIndex = 0; // Careful
+                Player.GameplayData.CurrentSpinIndex = 0; 
                 Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate(out Player.GameplayData.Results);
                 Player.SaveDataToDisk();
             }
@@ -98,7 +98,7 @@ namespace Managers
                 _isSpinning = true;
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
                 {
-                    if (i == _slotColumnControllers.Count - 1) // Last column
+                    if (i == _slotColumnControllers.Count - 1) 
                     {
                         var randomStopType = UnityEngine.Random.Range(0, 2) == 0 ? SlotColumnStopType.Slow : SlotColumnStopType.Regular;
                         var stopType = isFirstTwoSame ? randomStopType : SlotColumnStopType.Fast;
@@ -161,7 +161,7 @@ namespace Managers
             Player.SaveDataToDisk();
         }
 
-        private static void ClearResults()
+        private void ClearResults()
         {
             Player.GameplayData.Results.Clear();
             Player.GameplayData.ResultDictionary.Clear();

@@ -6,8 +6,8 @@ namespace Managers
 {
     public static class EventManager
     {
-        private static Dictionary<string, List<Action<object[]>>> _observers = new();
-        private static Dictionary<string, Func<object[], object>> _returnObservers = new();
+        private static Dictionary<string, List<Action<object[]>>> _observers;
+        private static Dictionary<string, Func<object[], object>> _returnObservers;
 
         static EventManager()
         {

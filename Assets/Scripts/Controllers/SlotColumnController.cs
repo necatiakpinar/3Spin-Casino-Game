@@ -17,6 +17,8 @@ namespace Controllers
         private readonly SlotColumnPropertiesDataSo _properties;
         private readonly List<TileMono> _tiles;
         private readonly TileMono _middleSlot;
+        private readonly int _targetProximity = 2;
+        private readonly int _slowDownDivider = 2;
         
         public SlotColumnController(List<TileMono> tiles, SlotColumnPropertiesDataSo properties)
         {
@@ -65,10 +67,10 @@ namespace Controllers
             bool isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
             while (!isObjectInPosition)
             {
-                if (CheckProximityToTarget(objectType, 2))
+                if (CheckProximityToTarget(objectType, _targetProximity))
                     SetSlotObjectBlurVisibility(false);
 
-                await DoMovement(_slowDownSpeed / 2);
+                await DoMovement(_slowDownSpeed / _slowDownDivider);
                 isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
 
                 await UniTask.Yield();
@@ -103,7 +105,7 @@ namespace Controllers
             return tile.Coordinates.y == _properties.MiddleSlotIndex && tile.SlotObjectMono.Type == objectType;
         }
 
-        public void SetSlotObjectBlurVisibility(bool isBlurred)
+        private void SetSlotObjectBlurVisibility(bool isBlurred)
         {
             foreach (var tile in _tiles)
                 tile.SlotObjectMono.SetSprite(isBlurred);

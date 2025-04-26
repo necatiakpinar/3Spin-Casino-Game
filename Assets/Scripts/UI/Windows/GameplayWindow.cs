@@ -14,7 +14,7 @@ namespace UI.Windows
 
         private void Start()
         {
-            Init(); //For now...(UI Manager required in full project)
+            Init(); //For now...(UI Manager required in full project, after creating grid then UI must loaded with state .)
         }
 
         public override void Init(BaseWindowParameters windowParameters = null)

@@ -45,7 +45,7 @@ namespace Managers
             var tile = Instantiate(_properties.Tile, transform);
             tile.transform.localPosition = position;
             
-            var currentSlotObjectPf = _properties.NormalSlotObjectsPF[_currentCreatedSlotObjectIndex];
+            var currentSlotObjectPf = _properties.NormalSlotObjectsPf[_currentCreatedSlotObjectIndex];
             var slotObject = Instantiate(currentSlotObjectPf, tile.transform);
             _currentCreatedSlotObjectIndex++;
             

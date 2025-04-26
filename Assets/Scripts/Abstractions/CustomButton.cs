@@ -10,7 +10,6 @@ namespace Abstractions
     public class CustomButton : MonoBehaviour
     {
         private Button _button;
-
         private List<UnityAction> _buttonActions = new List<UnityAction>();
 
         private void OnDisable()

@@ -80,17 +80,17 @@ namespace Controllers
         private List<ResultInterval> CalculateAndGetIntervals(int totalSpins, int numberOfIntervals)
         {
             var slotObjectIntervals = new List<ResultInterval>();
-            int intervalSize = totalSpins / numberOfIntervals;
-            int remainingSpins = totalSpins % numberOfIntervals;
+            var intervalSize = totalSpins / numberOfIntervals;
+            var remainingSpins = totalSpins % numberOfIntervals;
 
-            int start = 0;
+            var start = 0;
             for (int i = 0; i < numberOfIntervals; i++)
             {
-                int intervalSizeWithExtra = intervalSize;
+                var intervalSizeWithExtra = intervalSize;
                 if (i < remainingSpins)
                     intervalSizeWithExtra += 1;
 
-                int end = start + intervalSizeWithExtra - 1;
+                var end = start + intervalSizeWithExtra - 1;
                 if (i == numberOfIntervals - 1)
                     end = totalSpins - 1;
 
@@ -104,7 +104,7 @@ namespace Controllers
 
         private Dictionary<List<SlotObjectType>, List<int>> PrepareResultIntervals()
         {
-            Dictionary<List<SlotObjectType>, List<int>> resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
+            var resultIntervals = new Dictionary<List<SlotObjectType>, List<int>>();
 
             _spinResultHolders = new List<SpinResultHolder>();
             for (int i = 0; i < _totalSpinRatio; i++)
@@ -151,7 +151,7 @@ namespace Controllers
                     }
                 }
             }
-
+            
             return null;
         }
 
@@ -184,9 +184,7 @@ namespace Controllers
                 var targetSpinResultHolder = GetRandomSpinResultHolderInInterval(i, result, resultIntervals);
                 if (targetSpinResultHolder != null)
                 {
-                    var tempResult = _spinResultHolders[i].Result;
-                    _spinResultHolders[i].Result = targetSpinResultHolder.Result;
-                    targetSpinResultHolder.Result = tempResult;
+                    (_spinResultHolders[i].Result, targetSpinResultHolder.Result) = (targetSpinResultHolder.Result, _spinResultHolders[i].Result);
                 }
             }
         }
@@ -201,7 +199,7 @@ namespace Controllers
                 targetResult = _spinResultHolders[targetResultIndex].Result;
             }
 
-            bool canSwap = CanResultsSwap(resultIndex, result, targetResultIndex, targetResult);
+            var canSwap = CanResultsSwap(resultIndex, result, targetResultIndex, targetResult);
 
             if (canSwap)
                 return _spinResultHolders[targetResultIndex];
@@ -245,6 +243,5 @@ namespace Controllers
 
             return targetResultCanSwap && resultCanSwap;
         }
-
     }
 }

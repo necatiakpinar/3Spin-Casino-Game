@@ -2,20 +2,10 @@
 using Abstractions;
 using Enums;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Managers
 {
-    [System.Serializable]
-    public class VFXPoolObject
-    {
-        [SerializeField] private VFXType _vfxType;
-        [SerializeField] private BaseVFX _vfxPF;
-        [SerializeField] private int _size;
-
-        public VFXType VFXType => _vfxType;
-        public BaseVFX VFXPF => _vfxPF;
-        public int Size => _size;
-    }
 
     public class VFXPoolManager : MonoBehaviour
     {
@@ -50,7 +40,7 @@ namespace Managers
 
                 for (int i = 0; i < pool.Size; i++)
                 {
-                    BaseVFX vfx = Instantiate(pool.VFXPF, _vfxParent);
+                    BaseVFX vfx = Instantiate(pool.VfxPf, _vfxParent);
                     vfx.gameObject.SetActive(false);
                     vfx.Init();
                     objectPool.Enqueue(vfx);

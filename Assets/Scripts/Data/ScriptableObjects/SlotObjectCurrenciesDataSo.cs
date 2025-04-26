@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Enums;
 using Miscs;
@@ -7,13 +6,6 @@ using UnityEngine;
 
 namespace Data.ScriptableObjects
 {
-    [Serializable]
-    public struct SlotObjectCurrencyMultiplier
-    {
-        public SlotObjectType SlotObjectType;
-        public int Amount;
-    }
-
     [CreateAssetMenu(fileName = "SO_SlotObjectCurrenciesData", menuName = "Data/ScriptableObjects/SlotObjectCurrenciesData")]
     public class SlotObjectCurrenciesDataSo : ScriptableObject
     {

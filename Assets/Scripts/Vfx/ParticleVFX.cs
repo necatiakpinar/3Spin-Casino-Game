@@ -15,7 +15,7 @@ namespace Vfx
             _particleSystem = GetComponent<ParticleSystem>();
         }
 
-        public override async Task Play()
+        public async override Task Play()
         {
             _particleSystem.Play();
             await Task.Delay((int)(_particleSystem.main.duration * _milliSeconds));

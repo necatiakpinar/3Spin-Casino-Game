@@ -11,6 +11,6 @@ namespace Data.ScriptableObjects.Properties
         public string BlurredSuffix => _blurredSuffix;
         public float BlurredSpriteSpeedThreshold => _blurredSpriteSpeedThreshold;
         
-        public readonly float _milliSeconds = 1000;
+        public readonly float MilliSeconds = 1000;
     }
 }

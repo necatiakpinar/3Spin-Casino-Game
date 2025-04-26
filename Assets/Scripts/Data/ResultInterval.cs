@@ -26,6 +26,5 @@ namespace Data
         {
             _selectedIntervalIndex = selectedIntervalIndex;
         }
-        
     }
 }
