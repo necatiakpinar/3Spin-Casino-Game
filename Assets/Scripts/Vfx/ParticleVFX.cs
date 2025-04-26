@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Abstractions;
-using Managers;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Vfx
@@ -10,21 +10,17 @@ namespace Vfx
         private ParticleSystem _particleSystem;
         private readonly float _milliSeconds = 1000;
 
-        public override void Init()
+        public async override UniTask Init()
         {
             _particleSystem = GetComponent<ParticleSystem>();
+            await Task.CompletedTask;
         }
 
         public async override Task Play()
         {
             _particleSystem.Play();
             await Task.Delay((int)(_particleSystem.main.duration * _milliSeconds));
-            ReturnToPool();
-        }
-
-        public override void ReturnToPool()
-        {
-            VFXPoolManager.Instance.ReturnToPool(_vfxType, this);
+            ReturnToPool(this);
         }
     }
 }

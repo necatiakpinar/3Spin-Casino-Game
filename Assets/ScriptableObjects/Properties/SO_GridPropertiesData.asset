@@ -16,7 +16,7 @@ MonoBehaviour:
   _height: 5
   _cellSize: 2.5
   _tile: {fileID: 2386465281815715328, guid: cd72c73719f83d84192eaa71b3be2657, type: 3}
-  _normalSlotObjectsPF:
+  _normalSlotObjectsPf:
   - {fileID: 5858870092321074282, guid: eb40880c23614f0439b128a059d4080e, type: 3}
   - {fileID: 5858870092321074282, guid: f65b00c1cfa278f4e827413e2a1e4c6b, type: 3}
   - {fileID: 5858870092321074282, guid: 97c685bc987df604ea40923cdc860116, type: 3}

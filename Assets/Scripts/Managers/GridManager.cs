@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Addressables;
 using Data.ScriptableObjects.Properties;
-using Enums;
+using EventBus;
+using EventBus.Events;
 using UnityEngine;
 
 namespace Managers
@@ -35,7 +36,7 @@ namespace Managers
                 _gridDictionary.Add(x, _currentTiles);
             }
             
-            EventManager.Notify(ActionType.OnTilesCreated, _gridDictionary);
+            EventBus<TilesCreatedEvent>.Raise(new TilesCreatedEvent(_gridDictionary));
         }
 
         private TileMono CreateCell(int x, int y)

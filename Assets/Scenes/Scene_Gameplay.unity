@@ -382,9 +382,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1388172249}
-  - component: {fileID: 1388172250}
+  - component: {fileID: 1388172251}
   m_Layer: 0
-  m_Name: VFXPoolManager
+  m_Name: VfxPool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -405,7 +405,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2074199242}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1388172250
+--- !u!114 &1388172251
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -414,14 +414,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1388172248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1095c34fa17f48c1b7261e002c1c941d, type: 3}
+  m_Script: {fileID: 11500000, guid: 281258ab83794a5aafdaca4c1cff1165, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pools:
-  - _vfxType: 1
-    _vfxPF: {fileID: 2228977979126184521, guid: a0bc5fbdc0b84594bbbe340c1bbd5e5f, type: 3}
+  _poolObjects:
+  - _objectType: 1
+    _objectPf: {fileID: 2228977979126184521, guid: a0bc5fbdc0b84594bbbe340c1bbd5e5f, type: 3}
     _size: 2
-  _vfxParent: {fileID: 1388172249}
 --- !u!1 &1417037854
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,8 +770,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2074199242}
+  - component: {fileID: 2074199243}
   m_Layer: 0
-  m_Name: Pools
+  m_Name: PoolManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -794,6 +794,19 @@ Transform:
   - {fileID: 1388172249}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2074199243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074199241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d48d172559f1459b80db80c0e9067af7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _vfxPool: {fileID: 1388172251}
 --- !u!1001 &4667992099054987622
 PrefabInstance:
   m_ObjectHideFlags: 0

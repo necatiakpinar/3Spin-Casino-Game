@@ -46,5 +46,11 @@ namespace Data
 
             _gameplayData = playerData;
         }
+        
+        public static void ClearAllData()
+        {
+            _gameplayData = new GameplayData();
+            SaveDataToDisk();
+        }
     }
 }

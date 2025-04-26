@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using Abstractions;
 using Addressables;
 using Controllers;
 using Cysharp.Threading.Tasks;
@@ -8,9 +7,10 @@ using Data;
 using Data.ScriptableObjects;
 using Data.ScriptableObjects.Properties;
 using Enums;
+using EventBus;
+using EventBus.Events;
 using Helpers;
 using UnityEngine;
-using Vfx;
 
 namespace Managers
 {
@@ -24,24 +24,29 @@ namespace Managers
         private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
         private bool _isSpinning = false;
 
+        private EventBinding<TilesCreatedEvent> _tilesCreatedEventBinding;
+        private EventBinding<SpinPressedEvent, UniTask> _spinPressedEventBinding;
+        private EventBinding<GetSpinningStatusEvent, bool> _getSpinningStatusEventBinding;
+
         private readonly List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
 
         public void OnEnable()
         {
-            Action<object[]> onTilesCreated = (parameters) => OnTilesCreated((Dictionary<int, List<TileMono>>)parameters[0]);
-            EventManager.Subscribe(ActionType.OnTilesCreated, onTilesCreated);
+            _tilesCreatedEventBinding = new EventBinding<TilesCreatedEvent>(OnTilesCreated);
+            EventBus<TilesCreatedEvent>.Register(_tilesCreatedEventBinding);
 
-            Action<object[]> onSpinPressed = (_) => Spin();
-            EventManager.Subscribe(ActionType.OnSpinPressed, onSpinPressed);
+            _spinPressedEventBinding = new EventBinding<SpinPressedEvent, UniTask>(Spin);
+            EventBus<SpinPressedEvent, UniTask>.Register(_spinPressedEventBinding);
 
-            EventManager.Subscribe<bool>(FunctionType.CheckIsSpinning, (_) => _isSpinning);
+            _getSpinningStatusEventBinding = new EventBinding<GetSpinningStatusEvent, bool>(GetSpinningStatus);
+            EventBus<GetSpinningStatusEvent, bool>.Register(_getSpinningStatusEventBinding);
         }
 
         public void OnDestroy()
         {
-            EventManager.Unsubscribe(ActionType.OnTilesCreated);
-            EventManager.Unsubscribe(ActionType.OnSpinPressed);
-            EventManager.Unsubscribe(FunctionType.CheckIsSpinning);
+            EventBus<TilesCreatedEvent>.Deregister(_tilesCreatedEventBinding);
+            EventBus<SpinPressedEvent, UniTask>.Deregister(_spinPressedEventBinding);
+            EventBus<GetSpinningStatusEvent, bool>.Deregister(_getSpinningStatusEventBinding);
         }
 
         private void Awake()
@@ -61,11 +66,11 @@ namespace Managers
                     AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_SlotColumnPropertiesData));
         }
 
-        private async void OnTilesCreated(Dictionary<int, List<TileMono>> gridDictionary)
+        private async void OnTilesCreated(TilesCreatedEvent @event)
         {
             await FetchData();
 
-            _gridDictionary = gridDictionary;
+            _gridDictionary = @event.GridDictionary;
             for (int i = 0; i < _gridDictionary.Count; i++)
             {
                 var slotColumnController = new SlotColumnController(_gridDictionary[i], _slotColumnPropertiesDataSo);
@@ -80,13 +85,13 @@ namespace Managers
             if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
             {
                 ClearResults();
-                Player.GameplayData.CurrentSpinIndex = 0; 
+                Player.GameplayData.CurrentSpinIndex = 0;
                 Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate(out Player.GameplayData.Results);
                 Player.SaveDataToDisk();
             }
         }
 
-        private async UniTask Spin()
+        private async UniTask Spin(SpinPressedEvent @event)
         {
             var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
 
@@ -98,7 +103,7 @@ namespace Managers
                 _isSpinning = true;
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
                 {
-                    if (i == _slotColumnControllers.Count - 1) 
+                    if (i == _slotColumnControllers.Count - 1)
                     {
                         var randomStopType = UnityEngine.Random.Range(0, 2) == 0 ? SlotColumnStopType.Slow : SlotColumnStopType.Regular;
                         var stopType = isFirstTwoSame ? randomStopType : SlotColumnStopType.Fast;
@@ -123,24 +128,38 @@ namespace Managers
             UpdateData();
         }
 
+        public bool GetSpinningStatus(GetSpinningStatusEvent @event)
+        {
+            return _isSpinning;
+        }
+
         private async UniTask CheckForWin(List<SlotObjectType> spinResult)
         {
             var firstSlotObjectType = spinResult[0];
-            var isWin = spinResult.All(x => x == firstSlotObjectType);
+            var isWin = true;
+            for (int i = 0; i < spinResult.Count; i++)
+            {
+                if (spinResult[i] != firstSlotObjectType)
+                {
+                    isWin = false;
+                    break;
+                }
+            }
+
             if (isWin)
             {
-                var vfx = VFXPoolManager.Instance.SpawnFromPool<ParticleVFX>(VFXType.Coins, Vector3.zero, Quaternion.identity, false);
-                if (vfx)
+                var spawnedVfxEvent =
+                    EventBus<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>.Raise(new SpawnFromObjectPoolEvent<VFXType>(VFXType.Coins,
+                        Vector3.zero,
+                        Quaternion.identity,
+                        updatePositionAndRotation: false))[0];
+                var spawnedVfx = await spawnedVfxEvent;
+                if (spawnedVfx)
                 {
-                    await vfx.Play();
+                    await spawnedVfx.Play();
                     var currencyMultiplier = _slotObjectCurrenciesDataSo.GetSlotObjectCurrencyMultipliers(CurrencyType.Coin, firstSlotObjectType);
-                    var currency = Player.GameplayData.Currencies.FirstOrDefault(currency => currency.CurrencyType == CurrencyType.Coin);
-                    if (currency != null)
-                    {
-                        currency.AddAmount(currencyMultiplier.Amount);
-                        EventManager.Notify(ActionType.OnCurrencyUpdated, CurrencyType.Coin);
-                    }
-
+                    
+                    Player.GameplayData.CurrencyDataController.IncreaseCurrency(CurrencyType.Coin, currencyMultiplier.Amount);
                     Player.SaveDataToDisk();
                 }
             }

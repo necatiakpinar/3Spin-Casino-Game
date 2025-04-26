@@ -1,7 +1,8 @@
 ﻿using Abstractions;
-using Enums;
+using Cysharp.Threading.Tasks;
+using EventBus;
+using EventBus.Events;
 using Helpers;
-using Managers;
 using UI.Widgets;
 using UnityEngine;
 
@@ -29,14 +30,20 @@ namespace UI.Windows
 
         private void OnSpinButtonClicked()
         {
-            var isSpinning = EventManager.NotifyWithReturn<bool>(FunctionType.CheckIsSpinning);
+            var isSpinning = false;
+
+            var isSpinningEventResult = EventBus<GetSpinningStatusEvent, bool>.Raise(new GetSpinningStatusEvent());
+            if (isSpinningEventResult != null)
+                isSpinning = isSpinningEventResult[0];
+
             if (isSpinning)
             {
                 LoggerUtil.Log("Can't spin while spinning!");
                 return;
             }
 
-            EventManager.Notify(ActionType.OnSpinPressed);
+            //EventManager.Notify(ActionType.OnSpinPressed);
+            EventBus<SpinPressedEvent, UniTask>.Raise(new SpinPressedEvent());
         }
     }
 }

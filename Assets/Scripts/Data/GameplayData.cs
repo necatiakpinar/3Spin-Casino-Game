@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Abstractions;
 using Data.Currencies;
+using Data.PersistentData;
 using Enums;
 using Miscs;
 
@@ -14,11 +15,11 @@ namespace Data
         public int CurrentSpinIndex = 0;
         public List<ResultData> Results = new List<ResultData>();
         public SerializableDictionary<int, List<SlotObjectType>> ResultDictionary = new SerializableDictionary<int, List<SlotObjectType>>();
-        public List<BaseCurrency> Currencies = new List<BaseCurrency>();
+        public CurrencyDataController CurrencyDataController;
 
         public GameplayData()
         {
-            Currencies.Add(new CoinCurrency(0, CurrencyType.Coin));
+            CurrencyDataController = new CurrencyDataController();
         }
     }
 }

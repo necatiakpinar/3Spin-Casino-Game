@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using EventBus;
+using EventBus.Events;
 using Managers;
 
 namespace UI.Widgets
@@ -16,7 +18,8 @@ namespace UI.Widgets
         [SerializeField] private Image _currencyImage;
         [SerializeField] private TMP_Text _currencyAmountLabel;
 
-        private BaseCurrency _currency;
+        private OwnedCurrencyData _currencyData;
+        private EventBinding<CurrencyUpdatedEvent> _currencyUpdatedEventBinding;
 
         private readonly Vector3 _punchScale = new Vector3(1.25f, 1.25f, 1.25f);
         private readonly float _punchDuration = .3f;
@@ -25,13 +28,13 @@ namespace UI.Widgets
 
         private void OnEnable()
         {
-            Action<object[]> onCurrencyUpdate = (parameters) => UpdateCurrencyLabel((CurrencyType)parameters[0]);
-            EventManager.Subscribe(ActionType.OnCurrencyUpdated, onCurrencyUpdate);
+            _currencyUpdatedEventBinding = new EventBinding<CurrencyUpdatedEvent>(UpdateCurrencyLabel);
+            EventBus<CurrencyUpdatedEvent>.Register(_currencyUpdatedEventBinding);
         }
 
         private void OnDisable()
         {
-            EventManager.Unsubscribe(ActionType.OnCurrencyUpdated);
+            EventBus<CurrencyUpdatedEvent>.Deregister(_currencyUpdatedEventBinding);
         }
 
         private void Start()
@@ -41,17 +44,19 @@ namespace UI.Widgets
 
         public override void Init()
         {
-            _currency = Player.GameplayData.Currencies.Find(cur => cur.CurrencyType == _currencyType);
-            _currencyAmountLabel.text = _currency.Amount.ToString();
+            _currencyData = Player.GameplayData.CurrencyDataController.GetOwnedCurrency(_currencyType);
+            var currencyAmountText = _currencyData.Amount.ToString();
+            _currencyAmountLabel.text = currencyAmountText;
         }
 
-        private void UpdateCurrencyLabel(CurrencyType updatedCurrencyType)
+        private void UpdateCurrencyLabel(CurrencyUpdatedEvent @event)
         {
-            if (_currencyType != updatedCurrencyType)
+            if (_currencyType != @event.Type)
                 return;
 
             _currencyImage.transform.DOPunchScale(_punchScale, _punchDuration, _punchVibrato, _punchElasticity);
-            _currencyAmountLabel.text = _currency.Amount.ToString();
+            var newAmount = _currencyData.Amount.ToString();
+            _currencyAmountLabel.text = newAmount;
         }
     }
 }
