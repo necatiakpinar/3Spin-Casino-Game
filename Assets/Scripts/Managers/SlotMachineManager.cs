@@ -10,13 +10,15 @@ using Enums;
 using EventBus;
 using EventBus.Events;
 using Helpers;
+using Interfaces;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Managers
 {
     public class SlotMachineManager : MonoBehaviour
     {
-        private Dictionary<int, List<TileMono>> _gridDictionary;
+        private Dictionary<int, List<ITile>> _gridDictionary;
         private ResultPossibilitiesDataSo _resultPossibilitiesData;
         private SpinResultCalculator _spinResultCalculator;
         private SlotMachinePropertiesDataSo _properties;

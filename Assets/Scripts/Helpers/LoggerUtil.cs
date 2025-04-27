@@ -1,19 +1,19 @@
 using System.Collections.Generic;
-using Abstractions;
 using Loggers;
+using ILogger = Interfaces.ILogger;
 
 namespace Helpers
 {
     public static class LoggerUtil
     {
-        private static readonly List<BaseLogger> _loggers = new()
+        private static readonly List<ILogger> _loggers = new()
         {
             new UnityLogger()
         };
 
         public static void Log(object message)
         {
-            BaseLogger logger;
+            ILogger logger;
             for (var i = 0; i < _loggers.Count; i++)
             {
                 logger = _loggers[i];
@@ -23,7 +23,7 @@ namespace Helpers
 
         public static void LogError(object message)
         {
-            BaseLogger logger;
+            ILogger logger;
             for (var i = 0; i < _loggers.Count; i++)
             {
                 logger = _loggers[i];
@@ -33,7 +33,7 @@ namespace Helpers
 
         public static void LogWarning(object message)
         {
-            BaseLogger logger;
+            ILogger logger;
             for (var i = 0; i < _loggers.Count; i++)
             {
                 logger = _loggers[i];

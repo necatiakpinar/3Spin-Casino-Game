@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using Data.ScriptableObjects.Properties;
 using Enums;
+using Interfaces;
 using UnityEngine;
 
 namespace Controllers
@@ -15,12 +16,12 @@ namespace Controllers
         private bool _shouldContinueSpinning;
 
         private readonly SlotColumnPropertiesDataSo _properties;
-        private readonly List<TileMono> _tiles;
-        private readonly TileMono _middleSlot;
+        private readonly List<ITile> _tiles;
+        private readonly ITile _middleSlot;
         private readonly int _targetProximity = 2;
         private readonly int _slowDownDivider = 2;
         
-        public SlotColumnController(List<TileMono> tiles, SlotColumnPropertiesDataSo properties)
+        public SlotColumnController(List<ITile> tiles, SlotColumnPropertiesDataSo properties)
         {
             _properties = properties;
             _tiles = tiles;
@@ -81,7 +82,7 @@ namespace Controllers
 
         private bool CheckProximityToTarget(SlotObjectType objectType, int proximity)
         {
-            var targetIndex = _tiles.FindIndex(t => t.SlotObjectMono.Type == objectType);
+            var targetIndex = _tiles.FindIndex(t => t.SlotObject.Type == objectType);
             return Mathf.Abs(targetIndex - _properties.MiddleSlotIndex) <= proximity;
         }
 
@@ -100,15 +101,15 @@ namespace Controllers
             _isSpinning = false;
         }
 
-        private bool IsSlotObjectInFirstTile(TileMono tile, SlotObjectType objectType)
+        private bool IsSlotObjectInFirstTile(ITile tile, SlotObjectType objectType)
         {
-            return tile.Coordinates.y == _properties.MiddleSlotIndex && tile.SlotObjectMono.Type == objectType;
+            return tile.Coordinates.y == _properties.MiddleSlotIndex && tile.SlotObject.Type == objectType;
         }
 
         private void SetSlotObjectBlurVisibility(bool isBlurred)
         {
             foreach (var tile in _tiles)
-                tile.SlotObjectMono.SetSprite(isBlurred);
+                tile.SlotObject.SetSprite(isBlurred);
         }
     }
 }

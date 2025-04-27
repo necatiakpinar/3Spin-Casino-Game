@@ -1,28 +1,31 @@
-﻿using Abstractions;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
+using Interfaces;
 using UnityEngine;
+using UnityObjects;
 
-public class TileMono : MonoBehaviour
+public class TileMono : MonoBehaviour, ITile
 {
-    private Vector2Int _coordinates;
-    private SlotObjectMono _slotObjectMono;
-    public Vector2Int Coordinates => _coordinates;
-    public SlotObjectMono SlotObjectMono => _slotObjectMono;
-        
-    public void Init(Vector2Int coordinates, SlotObjectMono slotObjectMono)
+    private Data.Vector2Int _coordinates;
+    private ISlotObject _slotObjectMono;
+
+    public Data.Vector2Int Coordinates => _coordinates;
+    public ISlotObject SlotObject => _slotObjectMono;
+    public ITransform Transform => new UnityTransform(transform);
+
+    public void Init(Data.Vector2Int coordinates, ISlotObject slotObject)
     {
         _coordinates = coordinates;
-        _slotObjectMono = slotObjectMono;
-        slotObjectMono.transform.localPosition = Vector2.zero;
+        _slotObjectMono = slotObject;
+        _slotObjectMono.Transform.LocalPosition = Vector2.zero;
     }
-        
-    public async UniTask DropObjectToBottom(TileMono bottomTile, int speed)
+    
+    public void SetSlotObject(ISlotObject slotObject)
     {
-        await _slotObjectMono.MoveToTile(bottomTile, speed);
+        _slotObjectMono = slotObject;
     }
 
-    public void SetSlotObject(SlotObjectMono slotObjectMono)
+    public async UniTask DropObjectToBottom(ITile bottomTile, int speed)
     {
-        _slotObjectMono = slotObjectMono;
+        await _slotObjectMono.MoveToTile(bottomTile, speed);
     }
 }

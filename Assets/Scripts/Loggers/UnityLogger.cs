@@ -1,21 +1,22 @@
 ﻿using Abstractions;
 using UnityEngine;
+using ILogger = Interfaces.ILogger;
 
 namespace Loggers
 {
-    public class UnityLogger : BaseLogger
+    public class UnityLogger : ILogger
     {
-        public override void Log(object message)
+        public void Log(object message)
         {
             Debug.Log(message);
         }
 
-        public override void LogError(object message)
+        public void LogError(object message)
         {
             Debug.LogError(message);
         }
 
-        public override void LogWarning(object message)
+        public void LogWarning(object message)
         {
             Debug.LogWarning(message);
         }

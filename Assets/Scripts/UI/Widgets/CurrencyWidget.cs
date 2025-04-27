@@ -9,6 +9,7 @@ using DG.Tweening;
 using EventBus;
 using EventBus.Events;
 using Managers;
+using Vector3 = UnityEngine.Vector3;
 
 namespace UI.Widgets
 {
