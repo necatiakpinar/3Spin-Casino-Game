@@ -48,9 +48,9 @@ namespace Controllers
         {
             var coordinates = new Vector2Int(x, y);
             var position = new Vector3(x * _properties.CellSize, y * _properties.CellSize, 0);
-            var tile = _objectFactory.CreateTile(_properties.TilePrefab, _transformProvider.GetTransform(), position);
+            var tile = _objectFactory.CreateObject<ITile>(_properties.TilePrefab, _transformProvider.GetTransform(), position); 
             var currentSlotObjectPf = _properties.NormalSlotObjectsPf[_currentCreatedSlotObjectIndex];
-            var slotObject = _objectFactory.CreateSlotObject(currentSlotObjectPf, tile.Transform, Vector3.zero);
+            var slotObject = _objectFactory.CreateObject<ISlotObject>(currentSlotObjectPf, tile.Transform, position);
             _currentCreatedSlotObjectIndex++;
 
             tile.Init(coordinates, slotObject);

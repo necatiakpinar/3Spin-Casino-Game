@@ -8,7 +8,7 @@ namespace Interfaces
         int Width { get; }
         int Height { get; }
         float CellSize { get; }
-        object TilePrefab { get; }
+        ITile TilePrefab { get; }
         List<ISlotObject> NormalSlotObjectsPf { get; }
     }
 }

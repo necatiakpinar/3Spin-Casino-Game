@@ -1,6 +1,7 @@
 ﻿using Addressables;
 using Controllers;
 using Data.ScriptableObjects.Properties;
+using Factories;
 using Loggers;
 using UnityEngine;
 using UnityObjects;

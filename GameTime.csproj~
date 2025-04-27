@@ -56,8 +56,10 @@
     <Compile Include="Assets\Scripts\Addressables\AddressableLoader.cs" />
     <Compile Include="Assets\Scripts\Abstractions\CustomButton.cs" />
     <Compile Include="Assets\Scripts\EventBus\EventBus.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\ISpawnable.cs" />
     <Compile Include="Assets\Scripts\UI\Windows\GameplayWindow.cs" />
     <Compile Include="Assets\Scripts\Managers\PoolManager.cs" />
+    <Compile Include="Assets\Scripts\Adapters\UnitySlotObjectAdapter.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BasePool.cs" />
     <Compile Include="Assets\Scripts\Controllers\SpinResultCalculator.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseCurrency.cs" />
@@ -65,17 +67,16 @@
     <Compile Include="Assets\Scripts\Abstractions\SlotObjectMono.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IEvent.cs" />
     <Compile Include="Assets\Scripts\Data\PersistentData\CurrencyDataController.cs" />
+    <Compile Include="Assets\Scripts\Factories\UnityObjectFactory.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\ResultPossibilitiesDataSo.cs" />
     <Compile Include="Assets\Scripts\Miscs\Constants.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseVFX.cs" />
-    <Compile Include="Assets\Scripts\Abstractions\BaseLogger.cs" />
     <Compile Include="Assets\Scripts\EventBus\Events\GridManagerEvents.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\SlotMachinePropertiesDataSo.cs" />
     <Compile Include="Assets\Scripts\EventBus\PredefinedAssemblyUtil.cs" />
     <Compile Include="Assets\Scripts\EventBus\Events\SlotMachineEvents.cs" />
     <Compile Include="Assets\Scripts\Data\ResultData.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\SlotObjectPropertiesDataSo.cs" />
-    <Compile Include="Assets\Scripts\UnityObjects\UnityObjectFactory.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseWindowParameters.cs" />
     <Compile Include="Assets\Scripts\EventBus\EventBusUtil.cs" />
     <Compile Include="Assets\Scripts\Data\ResultInterval.cs" />
@@ -96,9 +97,7 @@
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGridProperties.cs" />
     <Compile Include="Assets\Scripts\Data\Vector3.cs" />
-    <Compile Include="Assets\Scripts\UnityObjects\UnityTileAdapter.cs" />
     <Compile Include="Assets\Scripts\Interfaces\ISlotObject.cs" />
-    <Compile Include="Assets\Scripts\UnityObjects\UnitySlotObjectAdapter.cs" />
     <Compile Include="Assets\Scripts\Interfaces\ITransformProvider.cs" />
     <Compile Include="Assets\Scripts\Controllers\SlotColumnController.cs" />
     <Compile Include="Assets\Scripts\Addressables\AddressableKeys.cs" />
@@ -116,6 +115,7 @@
     <Compile Include="Assets\Scripts\Interfaces\IPoolable.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IResultPossibilityProvider.cs" />
     <Compile Include="Assets\Scripts\Data\Player.cs" />
+    <Compile Include="Assets\Scripts\Adapters\UnityTileAdapter.cs" />
     <Compile Include="Assets\Scripts\Helpers\FileHelper.cs" />
     <None Include="Assets\Scripts\GameTime.asmdef" />
     <Reference Include="UnityEngine">

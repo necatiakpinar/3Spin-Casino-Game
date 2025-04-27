@@ -3,7 +3,7 @@ using Interfaces;
 using UnityEngine;
 using UnityObjects;
 
-public class TileMono : MonoBehaviour, ITile
+public class TileMono : MonoBehaviour, ITile, ISpawnable
 {
     private Data.Vector2Int _coordinates;
     private ISlotObject _slotObjectMono;

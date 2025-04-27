@@ -17,7 +17,7 @@ namespace Data.ScriptableObjects.Properties
         public int Width => _width;
         public int Height => _height;
         public float CellSize => _cellSize;
-        public object TilePrefab => _tile;
+        public ITile TilePrefab => _tile;
         public List<ISlotObject> NormalSlotObjectsPf => new(_normalSlotObjectsPf);
 
     }
