@@ -1,4 +1,6 @@
-﻿using Interfaces;
+﻿using Adapters;
+using Extensions;
+using Interfaces;
 using UnityEngine;
 
 namespace UnityObjects
@@ -6,7 +8,7 @@ namespace UnityObjects
     public class UnityTransform : ITransform
     {
         private readonly Transform _transform;
-        
+
         public Transform TransformRef => _transform;
 
         public UnityTransform(Transform transform)
@@ -14,16 +16,16 @@ namespace UnityObjects
             _transform = transform;
         }
 
-        public Vector3 Position
+        public IVector3 Position
         {
-            get => _transform.position;
-            set => _transform.position = value;
+            get => new Vector3Adapter(_transform.position.ToDataVector3());
+            set => _transform.position = new Vector3(value.x, value.y, value.z);
         }
 
-        public Vector3 LocalPosition
+        public IVector3 LocalPosition
         {
-            get => _transform.localPosition;
-            set => _transform.localPosition = value;
+            get => new Vector3Adapter(_transform.localPosition.ToDataVector3());
+            set => _transform.localPosition = new Vector3(value.x, value.y, value.z);
         }
 
         public void SetParent(ITransform parent)

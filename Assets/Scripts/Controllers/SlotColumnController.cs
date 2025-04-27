@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Data.ScriptableObjects.Properties;
 using Enums;
 using Interfaces;
-using UnityEngine;
 
 namespace Controllers
 {
@@ -83,7 +83,7 @@ namespace Controllers
         private bool CheckProximityToTarget(SlotObjectType objectType, int proximity)
         {
             var targetIndex = _tiles.FindIndex(t => t.SlotObject.Type == objectType);
-            return Mathf.Abs(targetIndex - _properties.MiddleSlotIndex) <= proximity;
+            return Math.Abs(targetIndex - _properties.MiddleSlotIndex) <= proximity;
         }
 
         private async UniTask DoMovement(int speed)

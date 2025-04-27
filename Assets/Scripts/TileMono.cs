@@ -1,4 +1,6 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Adapters;
+using Cysharp.Threading.Tasks;
+using Extensions;
 using Interfaces;
 using UnityEngine;
 using UnityObjects;
@@ -16,7 +18,7 @@ public class TileMono : MonoBehaviour, ITile, ISpawnable
     {
         _coordinates = coordinates;
         _slotObjectMono = slotObject;
-        _slotObjectMono.Transform.LocalPosition = Vector2.zero;
+        _slotObjectMono.Transform.LocalPosition = new Vector3Adapter(Vector3.zero.ToDataVector3());
     }
     
     public void SetSlotObject(ISlotObject slotObject)

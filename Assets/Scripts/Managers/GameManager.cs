@@ -21,7 +21,7 @@ namespace Managers
             _properties = await AddressableLoader.LoadAssetAsync<GridPropertiesDataSo>(AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_GridPropertiesData));
             
             var objectFactory = new UnityObjectFactory(_logger);
-            var transformProvider = new UnityTransformProvider(_gridParent);
+            var transformProvider = new UnityTransform(_gridParent);
             _gridController = new GridController(_properties, objectFactory, transformProvider);
         }
     }

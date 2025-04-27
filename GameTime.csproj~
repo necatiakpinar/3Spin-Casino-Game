@@ -47,8 +47,8 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Controllers\SpinResultHolder.cs" />
     <Compile Include="Assets\Scripts\Loggers\UnityLogger.cs" />
-    <Compile Include="Assets\Scripts\UnityObjects\UnityTransformProvider.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\SlotObjectCurrenciesDataSo.cs" />
+    <Compile Include="Assets\Scripts\Adapters\Vector3Adapter.cs" />
     <Compile Include="Assets\Scripts\Data\GameplayData.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\GridPropertiesDataSo.cs" />
     <Compile Include="Assets\Scripts\Vfx\ParticleVFX.cs" />
@@ -59,9 +59,9 @@
     <Compile Include="Assets\Scripts\Interfaces\ISpawnable.cs" />
     <Compile Include="Assets\Scripts\UI\Windows\GameplayWindow.cs" />
     <Compile Include="Assets\Scripts\Managers\PoolManager.cs" />
-    <Compile Include="Assets\Scripts\Adapters\UnitySlotObjectAdapter.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BasePool.cs" />
     <Compile Include="Assets\Scripts\Controllers\SpinResultCalculator.cs" />
+    <Compile Include="Assets\Scripts\Extensions\VectorExtensions.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseCurrency.cs" />
     <Compile Include="Assets\Scripts\UI\Widgets\CurrencyWidget.cs" />
     <Compile Include="Assets\Scripts\Abstractions\SlotObjectMono.cs" />
@@ -98,11 +98,11 @@
     <Compile Include="Assets\Scripts\Interfaces\IGridProperties.cs" />
     <Compile Include="Assets\Scripts\Data\Vector3.cs" />
     <Compile Include="Assets\Scripts\Interfaces\ISlotObject.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\ITransformProvider.cs" />
     <Compile Include="Assets\Scripts\Controllers\SlotColumnController.cs" />
     <Compile Include="Assets\Scripts\Addressables\AddressableKeys.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseWindow.cs" />
     <Compile Include="Assets\Scripts\Controllers\GridController.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IVector3.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\SlotObjectCurrencyMultiplier.cs" />
     <Compile Include="Assets\Scripts\Interfaces\ITransform.cs" />
     <Compile Include="Assets\Scripts\Data\Currencies\CoinCurrency.cs" />
@@ -115,7 +115,6 @@
     <Compile Include="Assets\Scripts\Interfaces\IPoolable.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IResultPossibilityProvider.cs" />
     <Compile Include="Assets\Scripts\Data\Player.cs" />
-    <Compile Include="Assets\Scripts\Adapters\UnityTileAdapter.cs" />
     <Compile Include="Assets\Scripts\Helpers\FileHelper.cs" />
     <None Include="Assets\Scripts\GameTime.asmdef" />
     <Reference Include="UnityEngine">

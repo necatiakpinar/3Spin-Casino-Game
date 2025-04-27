@@ -14,7 +14,7 @@ namespace Factories
             _logger = logger;
         }
         
-        public T CreateObject<T>(T prefab, ITransform parent, Data.Vector3 localPosition) where T : class
+        public T CreateObject<T>(T prefab, ITransform parent, IVector3 localPosition) where T : class
         {
             if (prefab == null)
             {
@@ -24,9 +24,8 @@ namespace Factories
 
             var unityParent = (parent as UnityTransform)?.TransformRef;
             var instance = Object.Instantiate(prefab as Object, unityParent);
-            
-            T spawnable = instance as T;
-            if (spawnable != null)
+
+            if (instance is T spawnable)
             {
                 var instanceTransform = (instance as Component)?.transform;
                 if (instanceTransform != null)
