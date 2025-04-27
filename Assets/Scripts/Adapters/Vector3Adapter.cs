@@ -1,5 +1,4 @@
 ﻿using Interfaces;
-using UnityEngine;
 
 namespace Adapters
 {
@@ -28,11 +27,6 @@ namespace Adapters
         {
             get => _vector.z;
             set => _vector.z = value;
-        }
-
-        public Vector3 ToUnityVector3()
-        {
-            return new UnityEngine.Vector3(_vector.x, _vector.y, _vector.z);
         }
     }
 }

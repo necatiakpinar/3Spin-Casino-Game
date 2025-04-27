@@ -9,21 +9,7 @@
         Jackpot,
         Bonus
     }
-
-    public enum ActionType
-    {
-        None,
-        OnTilesCreated,
-        OnCurrencyUpdated,
-        OnSpinPressed,
-    }
-
-    public enum FunctionType
-    {
-        None,
-        CheckIsSpinning
-    }
-
+    
     public enum VFXType
     {
         None,
@@ -42,5 +28,12 @@
         Fast,
         Regular,
         Slow,
+    }
+    
+    public enum StateMachineStateType
+    {
+        None,
+        Starting,
+        Gameplay,
     }
 }

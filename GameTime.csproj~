@@ -61,6 +61,7 @@
     <Compile Include="Assets\Scripts\Managers\PoolManager.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BasePool.cs" />
     <Compile Include="Assets\Scripts\Controllers\SpinResultCalculator.cs" />
+    <Compile Include="Assets\Scripts\StateMachines\StateMachine.cs" />
     <Compile Include="Assets\Scripts\Extensions\VectorExtensions.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseCurrency.cs" />
     <Compile Include="Assets\Scripts\UI\Widgets\CurrencyWidget.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="Assets\Scripts\Editor\SpinCasinoEditor.cs" />
     <Compile Include="Assets\Scripts\Miscs\PoolObject.cs" />
     <Compile Include="Assets\Scripts\EventBus\Events\PoolManagerEvents.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IState.cs" />
+    <Compile Include="Assets\Scripts\StateMachines\States\StartingState.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGridProperties.cs" />
     <Compile Include="Assets\Scripts\Data\Vector3.cs" />
@@ -115,6 +118,7 @@
     <Compile Include="Assets\Scripts\Interfaces\IPoolable.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IResultPossibilityProvider.cs" />
     <Compile Include="Assets\Scripts\Data\Player.cs" />
+    <Compile Include="Assets\Scripts\StateMachines\States\GameplayState.cs" />
     <Compile Include="Assets\Scripts\Helpers\FileHelper.cs" />
     <None Include="Assets\Scripts\GameTime.asmdef" />
     <Reference Include="UnityEngine">

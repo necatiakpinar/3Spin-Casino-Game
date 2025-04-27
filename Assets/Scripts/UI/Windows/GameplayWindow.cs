@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using EventBus;
 using EventBus.Events;
 using Helpers;
+using StateMachines.States;
 using UI.Widgets;
 using UnityEngine;
 
@@ -13,9 +14,23 @@ namespace UI.Windows
         [SerializeField] private CurrencyWidget _currencyWidget;
         [SerializeField] private CustomButton _spinButton;
 
-        private void Start()
+        private EventBinding<StateMachineStateChangedEvent> _stateChangedEventBinding;
+
+        private void OnEnable()
         {
-            Init(); //For now...(UI Manager required in full project, after creating grid then UI must loaded with state .)
+            _stateChangedEventBinding = new EventBinding<StateMachineStateChangedEvent>(OnStateMachineStateChanged);
+            EventBus<StateMachineStateChangedEvent>.Register(_stateChangedEventBinding);
+        }
+
+        private void OnDisable()
+        {
+            EventBus<StateMachineStateChangedEvent>.Deregister(_stateChangedEventBinding);
+        }
+        
+        private void OnStateMachineStateChanged(StateMachineStateChangedEvent @event)
+        {
+            if (@event.StateName == nameof(GameplayState))
+                Init();
         }
 
         public override void Init(BaseWindowParameters windowParameters = null)
@@ -42,7 +57,6 @@ namespace UI.Windows
                 return;
             }
 
-            //EventManager.Notify(ActionType.OnSpinPressed);
             EventBus<SpinPressedEvent, UniTask>.Raise(new SpinPressedEvent());
         }
     }
