@@ -8,6 +8,6 @@ namespace Interfaces
         SlotObjectType Type { get; }
         ITransform Transform { get; }
         void SetSprite(bool isBlurred);
-        UniTask MoveToTile(ITile targetTile, int speed);
+        void MoveToTile(ITile targetTile, int speed);
     }
 }

@@ -20,7 +20,7 @@ namespace Controllers
         private readonly ITile _middleSlot;
         private readonly int _targetProximity = 2;
         private readonly int _slowDownDivider = 2;
-        
+
         public SlotColumnController(List<ITile> tiles, SlotColumnPropertiesDataSo properties)
         {
             _properties = properties;
@@ -64,7 +64,7 @@ namespace Controllers
         private async UniTask SlowDownToStop(SlotObjectType objectType)
         {
             await UniTask.WaitUntil(() => !_isSpinning);
-            
+
             bool isObjectInPosition = IsSlotObjectInFirstTile(_middleSlot, objectType);
             while (!isObjectInPosition)
             {
@@ -94,7 +94,7 @@ namespace Controllers
             {
                 var tile = _tiles[i];
                 var targetTile = i - 1 >= 0 ? _tiles[i - 1] : _tiles[^1];
-                await tile.DropObjectToBottom(targetTile, speed);
+                tile.DropObjectToBottom(targetTile, speed);
             }
 
             await UniTask.Delay(speed);

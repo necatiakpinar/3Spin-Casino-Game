@@ -11,7 +11,10 @@ using EventBus;
 using EventBus.Events;
 using Helpers;
 using Interfaces;
+using Loggers;
+using Miscs;
 using UnityEngine;
+using ILogger = Interfaces.ILogger;
 using Vector3 = UnityEngine.Vector3;
 
 namespace Managers
@@ -31,6 +34,12 @@ namespace Managers
         private EventBinding<GetSpinningStatusEvent, bool> _getSpinningStatusEventBinding;
 
         private readonly List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
+
+        private CryptoHelper _cryptoHelper;
+        private JsonHelper _jsonHelper;
+        private SaveSystemController<GameplayData> _gameplaySaveSystemController;
+        private ILogger _logger;
+        private PersistentDataController _persistentDataController;
 
         public void OnEnable()
         {
@@ -53,7 +62,12 @@ namespace Managers
 
         private void Awake()
         {
-            Player.LoadSaveDataFromDisk();
+            _logger = new UnityLogger();
+            _cryptoHelper = new CryptoHelper();
+            _jsonHelper = new JsonHelper();
+            _gameplaySaveSystemController = new SaveSystemController<GameplayData>(Constants.GameplayDataPath, _jsonHelper, _cryptoHelper, _logger);
+            _gameplaySaveSystemController.LoadSaveDataFromDisk();
+            _persistentDataController = new PersistentDataController((GameplayData)_gameplaySaveSystemController.PersistentData);
         }
 
         private async UniTask FetchData()
@@ -83,24 +97,26 @@ namespace Managers
                 await AddressableLoader.LoadAssetAsync<ResultPossibilitiesDataSo>(
                     AddressableKeys.GetKey(AddressableKeys.AssetKeys.SO_ResultPossibilitiesData));
 
-            _spinResultCalculator = new SpinResultCalculator(_resultPossibilitiesData, Player.GameplayData.TotalSpinRatio);
-            if (Player.GameplayData.Results.Count == 0 && Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio)
+            _spinResultCalculator = new SpinResultCalculator(_resultPossibilitiesData, _persistentDataController.GameplayData.TotalSpinRatio);
+            if (_persistentDataController.GameplayData.Results.Count == 0 &&
+                _persistentDataController.GameplayData.CurrentSpinIndex < _persistentDataController.GameplayData.TotalSpinRatio)
             {
                 ClearResults();
-                Player.GameplayData.CurrentSpinIndex = 0;
-                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate(out Player.GameplayData.Results);
-                Player.SaveDataToDisk();
+                _persistentDataController.GameplayData.CurrentSpinIndex = 0;
+                _persistentDataController.GameplayData.ResultDictionary =
+                    _spinResultCalculator.Calculate(out _persistentDataController.GameplayData.Results);
+                _gameplaySaveSystemController.SaveDataToDisk(null);
             }
         }
 
         private async UniTask Spin(SpinPressedEvent @event)
         {
-            var isExist = Player.GameplayData.ResultDictionary.ContainsKey(Player.GameplayData.CurrentSpinIndex);
+            var isExist = _persistentDataController.GameplayData.ResultDictionary.ContainsKey(_persistentDataController.GameplayData.CurrentSpinIndex);
 
             if (isExist)
             {
-                var spinResult = Player.GameplayData.ResultDictionary[Player.GameplayData.CurrentSpinIndex];
-                LoggerUtil.Log($"{Player.GameplayData.CurrentSpinIndex} {spinResult[0]} {spinResult[1]} {spinResult[2]}");
+                var spinResult = _persistentDataController.GameplayData.ResultDictionary[_persistentDataController.GameplayData.CurrentSpinIndex];
+                LoggerUtil.Log($"{_persistentDataController.GameplayData.CurrentSpinIndex} {spinResult[0]} {spinResult[1]} {spinResult[2]}");
                 var isFirstTwoSame = spinResult[0] == spinResult[1];
                 _isSpinning = true;
                 for (int i = 0; i < _slotColumnControllers.Count; i++)
@@ -160,33 +176,35 @@ namespace Managers
                 {
                     await spawnedVfx.Play();
                     var currencyMultiplier = _slotObjectCurrenciesDataSo.GetSlotObjectCurrencyMultipliers(CurrencyType.Coin, firstSlotObjectType);
-                    
-                    Player.GameplayData.CurrencyDataController.IncreaseCurrency(CurrencyType.Coin, currencyMultiplier.Amount);
-                    Player.SaveDataToDisk();
+
+                    _persistentDataController.GameplayData.CurrencyDataController.IncreaseCurrency(CurrencyType.Coin, currencyMultiplier.Amount);
+                    _gameplaySaveSystemController.SaveDataToDisk(null);
                 }
             }
         }
 
         private void UpdateData()
         {
-            if (Player.GameplayData.CurrentSpinIndex < Player.GameplayData.TotalSpinRatio - 1)
-                Player.GameplayData.CurrentSpinIndex++;
+            if (_persistentDataController.GameplayData.CurrentSpinIndex < _persistentDataController.GameplayData.TotalSpinRatio - 1)
+                _persistentDataController.GameplayData.CurrentSpinIndex++;
             else
             {
-                Player.GameplayData.CurrentSpinIndex = 0;
+                _persistentDataController.GameplayData.CurrentSpinIndex = 0;
                 ClearResults();
-                Player.GameplayData.ResultDictionary = _spinResultCalculator.Calculate(out Player.GameplayData.Results);
-                Player.SaveDataToDisk();
+                _persistentDataController.GameplayData.ResultDictionary =
+                    _spinResultCalculator.Calculate(out _persistentDataController.GameplayData.Results);
+                _gameplaySaveSystemController.SaveDataToDisk(null);
             }
 
-            Player.SaveDataToDisk();
+            _gameplaySaveSystemController.SaveDataToDisk(null);
+
         }
 
         private void ClearResults()
         {
-            Player.GameplayData.Results.Clear();
-            Player.GameplayData.ResultDictionary.Clear();
-            Player.SaveDataToDisk();
+            _persistentDataController.GameplayData.Results.Clear();
+            _persistentDataController.GameplayData.ResultDictionary.Clear();
+            _gameplaySaveSystemController.SaveDataToDisk(null);
         }
     }
 }

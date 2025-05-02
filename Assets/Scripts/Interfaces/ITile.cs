@@ -10,6 +10,6 @@ namespace Interfaces
         ITransform Transform { get; }
         void Init(Vector2Int coordinates, ISlotObject slotObject);
         void SetSlotObject(ISlotObject slotObject);
-        UniTask DropObjectToBottom(ITile bottomTile, int speed);
+        void DropObjectToBottom(ITile bottomTile, int speed);
     }
 }

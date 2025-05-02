@@ -4,12 +4,13 @@ using Abstractions;
 using Data.Currencies;
 using Data.PersistentData;
 using Enums;
+using Interfaces;
 using Miscs;
 
 namespace Data
 {
     [Serializable]
-    public class GameplayData
+    public class GameplayData : IGameplayData
     {
         public int TotalSpinRatio = 100;
         public int CurrentSpinIndex = 0;

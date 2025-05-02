@@ -67,7 +67,7 @@ namespace Abstractions
             _spriteRenderer.sprite = isBlurred ? _blurredSprite : _normalSprite;
         }
 
-        public async UniTask MoveToTile(ITile targetTile, int speed)
+        public void MoveToTile(ITile targetTile, int speed)
         {
             var targetTileMono = targetTile as TileMono;
             if (targetTileMono == null)
@@ -88,8 +88,7 @@ namespace Abstractions
             {
                 targetTileMono.SetSlotObject(this);
             });
-
-            await UniTask.CompletedTask;
+            
         }
     }
 }

@@ -2,17 +2,28 @@
 using Controllers;
 using Data;
 using Data.ScriptableObjects;
+using Helpers;
+using Interfaces;
+using Loggers;
+using Miscs;
 using NUnit.Framework;
 using UnityEditor;
 
 namespace Tests.EditMode
 {
+    
     [TestFixture]
     [Category("Logic Calculations")]
     public class ResultCalculationsEditModeTest
     {
         private ResultPossibilitiesDataSo _resultData;
+        private CryptoHelper _cryptoHelper;
+        private JsonHelper _jsonHelper;
+        private SaveSystemController<GameplayData> _gameplaySaveSystemController;
+        private ILogger _logger;
+        private PersistentDataController _persistentDataController;
 
+        
         private const string _resultDataPath =
             "Assets/ScriptableObjects/Possibilities/SO_ResultPossibilitiesData.asset";
 
@@ -20,7 +31,12 @@ namespace Tests.EditMode
         public void Setup()
         {
             _resultData = AssetDatabase.LoadAssetAtPath<ResultPossibilitiesDataSo>(_resultDataPath);
-            Player.LoadSaveDataFromDisk();
+            _logger = new UnityLogger();
+            _cryptoHelper = new CryptoHelper();
+            _jsonHelper = new JsonHelper();
+            _gameplaySaveSystemController = new SaveSystemController<GameplayData>(Constants.GameplayDataPath, _jsonHelper, _cryptoHelper, _logger);
+            _gameplaySaveSystemController.LoadSaveDataFromDisk();
+            _persistentDataController = new PersistentDataController((GameplayData)_gameplaySaveSystemController.PersistentData);            
         }
 
         [Test]
@@ -35,7 +51,7 @@ namespace Tests.EditMode
                 TestContext.WriteLine($" {resultPossibility.Name} {resultPossibility.Possibility}");
             }
 
-            Assert.AreEqual(Player.GameplayData.TotalSpinRatio,
+            Assert.AreEqual(_persistentDataController.GameplayData.TotalSpinRatio,
                 totalSpinRatio,
                 "The total spin ratio should be equal to the sum of all the spin ratios in the result dictionary.");
         }
@@ -45,12 +61,12 @@ namespace Tests.EditMode
         {
             Assert.IsNotNull(_resultData, "Result data should not be null");
 
-            var spinResultCalculator = new SpinResultCalculator(_resultData, Player.GameplayData.TotalSpinRatio);
+            var spinResultCalculator = new SpinResultCalculator(_resultData, _persistentDataController.GameplayData.TotalSpinRatio);
             var resultDictionary = spinResultCalculator.Calculate(out var results);
 
-            Assert.AreEqual(Player.GameplayData.TotalSpinRatio,
+            Assert.AreEqual(_persistentDataController.GameplayData.TotalSpinRatio,
                 resultDictionary.pairs.Count,
-                $"The count of pairs should be exactly {Player.GameplayData.TotalSpinRatio} for the test to pass.");
+                $"The count of pairs should be exactly {_persistentDataController.GameplayData.TotalSpinRatio} for the test to pass.");
         }
 
         [Test]
@@ -71,9 +87,9 @@ namespace Tests.EditMode
                 }
             }
 
-            Assert.AreEqual(Player.GameplayData.TotalSpinRatio,
+            Assert.AreEqual(_persistentDataController.GameplayData.TotalSpinRatio,
                 resultDictionary.pairs.Count,
-                $"The count of pairs should be exactly {Player.GameplayData.TotalSpinRatio} for the test to pass.");
+                $"The count of pairs should be exactly {_persistentDataController.GameplayData.TotalSpinRatio} for the test to pass.");
         }
 
         [Test]
@@ -121,15 +137,15 @@ namespace Tests.EditMode
                 }
             }
 
-            for (int i = 0; i < Player.GameplayData.TotalSpinRatio; i++)
+            for (int i = 0; i < _persistentDataController.GameplayData.TotalSpinRatio; i++)
             {
                 Assert.IsTrue(usedIntervalIndexes.ContainsKey(i),
-                    $"Interval index {i} is not used by any result. All indexes from 0 to {Player.GameplayData.TotalSpinRatio} should be used.");
+                    $"Interval index {i} is not used by any result. All indexes from 0 to {_persistentDataController.GameplayData.TotalSpinRatio} should be used.");
             }
 
-            Assert.AreEqual(Player.GameplayData.TotalSpinRatio,
+            Assert.AreEqual(_persistentDataController.GameplayData.TotalSpinRatio,
                 usedIntervalIndexes.Count,
-                $"There should be exactly {Player.GameplayData.TotalSpinRatio} unique interval indexes (0-{Player.GameplayData.TotalSpinRatio}).");
+                $"There should be exactly {_persistentDataController.GameplayData.TotalSpinRatio} unique interval indexes (0-{_persistentDataController.GameplayData.TotalSpinRatio}).");
         }
     }
 }

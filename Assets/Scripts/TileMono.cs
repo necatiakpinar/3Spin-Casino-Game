@@ -26,8 +26,8 @@ public class TileMono : MonoBehaviour, ITile, ISpawnable
         _slotObjectMono = slotObject;
     }
 
-    public async UniTask DropObjectToBottom(ITile bottomTile, int speed)
+    public void DropObjectToBottom(ITile bottomTile, int speed)
     {
-        await _slotObjectMono.MoveToTile(bottomTile, speed);
+         _slotObjectMono.MoveToTile(bottomTile, speed);
     }
 }

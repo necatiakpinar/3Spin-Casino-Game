@@ -45,12 +45,23 @@
     <Analyzer Include="E:\Unity\Unity Hub\Editor\2022.3.55f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Controllers\PersistentDataController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\SaveSystemController.cs" />
     <Compile Include="Assets\Scripts\Controllers\SpinResultHolder.cs" />
+    <Compile Include="Assets\Scripts\EventBus\Events\PersistentDataEvents.cs" />
+    <Compile Include="Assets\Scripts\EventBus\Events\SaveLoadEvents.cs" />
+    <Compile Include="Assets\Scripts\Helpers\CryptoHelper.cs" />
+    <Compile Include="Assets\Scripts\Helpers\JsonHelper.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\ICryptoHelper.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IGameplayData.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IJsonHelper.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\ISaveSystemController.cs" />
     <Compile Include="Assets\Scripts\Loggers\UnityLogger.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\SlotObjectCurrenciesDataSo.cs" />
     <Compile Include="Assets\Scripts\Adapters\Vector3Adapter.cs" />
     <Compile Include="Assets\Scripts\Data\GameplayData.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\GridPropertiesDataSo.cs" />
+    <Compile Include="Assets\Scripts\Miscs\KeyGenerator.cs" />
     <Compile Include="Assets\Scripts\Vfx\ParticleVFX.cs" />
     <Compile Include="Assets\Scripts\Data\OwnedCurrencyData.cs" />
     <Compile Include="Assets\Scripts\Addressables\AddressableLoader.cs" />
@@ -72,6 +83,7 @@
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\ResultPossibilitiesDataSo.cs" />
     <Compile Include="Assets\Scripts\Miscs\Constants.cs" />
     <Compile Include="Assets\Scripts\Abstractions\BaseVFX.cs" />
+    <Compile Include="Assets\Scripts\EventBus\Events\StateMachineEvents.cs" />
     <Compile Include="Assets\Scripts\EventBus\Events\GridManagerEvents.cs" />
     <Compile Include="Assets\Scripts\Data\ScriptableObjects\Properties\SlotMachinePropertiesDataSo.cs" />
     <Compile Include="Assets\Scripts\EventBus\PredefinedAssemblyUtil.cs" />
@@ -94,8 +106,8 @@
     <Compile Include="Assets\Scripts\TileMono.cs" />
     <Compile Include="Assets\Scripts\Editor\SpinCasinoEditor.cs" />
     <Compile Include="Assets\Scripts\Miscs\PoolObject.cs" />
-    <Compile Include="Assets\Scripts\EventBus\Events\PoolManagerEvents.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IState.cs" />
+    <Compile Include="Assets\Scripts\EventBus\Events\PoolManagerEvents.cs" />
     <Compile Include="Assets\Scripts\StateMachines\States\StartingState.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGridProperties.cs" />
@@ -117,7 +129,7 @@
     <Compile Include="Assets\Scripts\EventBus\Events\CurrencyEvents.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IPoolable.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IResultPossibilityProvider.cs" />
-    <Compile Include="Assets\Scripts\Data\Player.cs" />
+    <Compile Include="Assets\Scripts\Data\PersistentDataController.cs" />
     <Compile Include="Assets\Scripts\StateMachines\States\GameplayState.cs" />
     <Compile Include="Assets\Scripts\Helpers\FileHelper.cs" />
     <None Include="Assets\Scripts\GameTime.asmdef" />

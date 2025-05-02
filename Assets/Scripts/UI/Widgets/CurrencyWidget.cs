@@ -45,7 +45,9 @@ namespace UI.Widgets
 
         public override void Init()
         {
-            _currencyData = Player.GameplayData.CurrencyDataController.GetOwnedCurrency(_currencyType);
+            var persistentData = EventBus<GetPersistentDataEvent, GameplayData>.Raise(new GetPersistentDataEvent())[0];
+
+            _currencyData = persistentData.CurrencyDataController.GetOwnedCurrency(_currencyType);
             var currencyAmountText = _currencyData.Amount.ToString();
             _currencyAmountLabel.text = currencyAmountText;
         }
