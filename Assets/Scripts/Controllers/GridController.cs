@@ -42,7 +42,7 @@ namespace Controllers
                 _gridDictionary.Add(x, _currentTiles);
             }
 
-            EventBus<TilesCreatedEvent>.Raise(new TilesCreatedEvent(_gridDictionary));
+            EventBusManager.Raise(new TilesCreatedEvent(_gridDictionary));
         }
 
         private ITile CreateCell(int x, int y)

@@ -29,10 +29,6 @@ namespace Managers
         private SlotColumnPropertiesDataSo _slotColumnPropertiesDataSo;
         private bool _isSpinning = false;
 
-        private EventBinding<TilesCreatedEvent> _tilesCreatedEventBinding;
-        private EventBinding<SpinPressedEvent, UniTask> _spinPressedEventBinding;
-        private EventBinding<GetSpinningStatusEvent, bool> _getSpinningStatusEventBinding;
-
         private readonly List<SlotColumnController> _slotColumnControllers = new List<SlotColumnController>();
 
         private CryptoHelper _cryptoHelper;
@@ -43,21 +39,16 @@ namespace Managers
 
         public void OnEnable()
         {
-            _tilesCreatedEventBinding = new EventBinding<TilesCreatedEvent>(OnTilesCreated);
-            EventBus<TilesCreatedEvent>.Register(_tilesCreatedEventBinding);
-
-            _spinPressedEventBinding = new EventBinding<SpinPressedEvent, UniTask>(Spin);
-            EventBus<SpinPressedEvent, UniTask>.Register(_spinPressedEventBinding);
-
-            _getSpinningStatusEventBinding = new EventBinding<GetSpinningStatusEvent, bool>(GetSpinningStatus);
-            EventBus<GetSpinningStatusEvent, bool>.Register(_getSpinningStatusEventBinding);
+            EventBusManager.Subscribe<TilesCreatedEvent>(OnTilesCreated);
+            EventBusManager.SubscribeWithResult<SpinPressedEvent, UniTask>(Spin);
+            EventBusManager.SubscribeWithResult<GetSpinningStatusEvent, bool>(GetSpinningStatus);
         }
 
         public void OnDestroy()
         {
-            EventBus<TilesCreatedEvent>.Deregister(_tilesCreatedEventBinding);
-            EventBus<SpinPressedEvent, UniTask>.Deregister(_spinPressedEventBinding);
-            EventBus<GetSpinningStatusEvent, bool>.Deregister(_getSpinningStatusEventBinding);
+            EventBusManager.Unsubscribe<TilesCreatedEvent>(OnTilesCreated);
+            EventBusManager.UnsubscribeWithResult<SpinPressedEvent, UniTask>(Spin);
+            EventBusManager.UnsubscribeWithResult<GetSpinningStatusEvent, bool>(GetSpinningStatus);
         }
 
         private void Awake()
@@ -166,12 +157,12 @@ namespace Managers
 
             if (isWin)
             {
-                var spawnedVfxEvent =
-                    EventBus<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>.Raise(new SpawnFromObjectPoolEvent<VFXType>(VFXType.Coins,
-                        Vector3.zero,
-                        Quaternion.identity,
-                        updatePositionAndRotation: false))[0];
-                var spawnedVfx = await spawnedVfxEvent;
+                var vfxEvent = new SpawnFromObjectPoolEvent<VFXType>(VFXType.Coins,
+                    Vector3.zero,
+                    Quaternion.identity,
+                    updatePositionAndRotation: false);
+
+                var spawnedVfx = await EventBusManager.RaiseWithResult<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>(vfxEvent);
                 if (spawnedVfx)
                 {
                     await spawnedVfx.Play();

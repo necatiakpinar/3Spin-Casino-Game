@@ -7,8 +7,6 @@ namespace Controllers
     public class PersistentDataController
     {
         private readonly GameplayData _gameplayData;
-        private EventBinding<GetPersistentDataEvent, GameplayData> _getPersistentDataBinding;
-        
         public GameplayData GameplayData => _gameplayData;
 
         public PersistentDataController(GameplayData gameplayData)
@@ -19,13 +17,12 @@ namespace Controllers
 
         private void AddEventBindings()
         {
-            _getPersistentDataBinding = new EventBinding<GetPersistentDataEvent, GameplayData>(GetPersistentData);
-            EventBus<GetPersistentDataEvent, GameplayData>.Register(_getPersistentDataBinding);
+            EventBusManager.SubscribeWithResult<GetPersistentDataEvent, GameplayData>(GetPersistentData);
         }
 
         public void RemoveEventBindings()
         {
-            EventBus<GetPersistentDataEvent, GameplayData>.Deregister(_getPersistentDataBinding);
+            EventBusManager.UnsubscribeWithResult<GetPersistentDataEvent, GameplayData>(GetPersistentData);
         }
 
         private GameplayData GetPersistentData(GetPersistentDataEvent @event)

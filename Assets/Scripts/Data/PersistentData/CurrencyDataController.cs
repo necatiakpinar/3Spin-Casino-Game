@@ -25,7 +25,7 @@ namespace Data.PersistentData
             if (isExist)
             {
                 currency.Amount += amount;
-                EventBus<CurrencyUpdatedEvent>.Raise(new CurrencyUpdatedEvent(type, amount));
+                EventBusManager.Raise(new CurrencyUpdatedEvent(type, amount));
             }
         }
 
@@ -38,7 +38,7 @@ namespace Data.PersistentData
                 if (currency.Amount <= 0)
                     currency.Amount = 0;
 
-                EventBus<CurrencyUpdatedEvent>.Raise(new CurrencyUpdatedEvent(type, amount));
+                EventBusManager.Raise(new CurrencyUpdatedEvent(type, amount));
             }
         }
 

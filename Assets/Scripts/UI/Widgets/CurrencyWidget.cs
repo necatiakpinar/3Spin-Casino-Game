@@ -20,7 +20,6 @@ namespace UI.Widgets
         [SerializeField] private TMP_Text _currencyAmountLabel;
 
         private OwnedCurrencyData _currencyData;
-        private EventBinding<CurrencyUpdatedEvent> _currencyUpdatedEventBinding;
 
         private readonly Vector3 _punchScale = new Vector3(1.25f, 1.25f, 1.25f);
         private readonly float _punchDuration = .3f;
@@ -29,13 +28,13 @@ namespace UI.Widgets
 
         private void OnEnable()
         {
-            _currencyUpdatedEventBinding = new EventBinding<CurrencyUpdatedEvent>(UpdateCurrencyLabel);
-            EventBus<CurrencyUpdatedEvent>.Register(_currencyUpdatedEventBinding);
+            EventBusManager.Subscribe<CurrencyUpdatedEvent>(UpdateCurrencyLabel);
+            
         }
 
         private void OnDisable()
         {
-            EventBus<CurrencyUpdatedEvent>.Deregister(_currencyUpdatedEventBinding);
+            EventBusManager.Unsubscribe<CurrencyUpdatedEvent>(UpdateCurrencyLabel);
         }
 
         private void Start()
@@ -45,7 +44,7 @@ namespace UI.Widgets
 
         public override void Init()
         {
-            var persistentData = EventBus<GetPersistentDataEvent, GameplayData>.Raise(new GetPersistentDataEvent())[0];
+            var persistentData = EventBusManager.RaiseWithResult<GetPersistentDataEvent, GameplayData>(new GetPersistentDataEvent());
 
             _currencyData = persistentData.CurrencyDataController.GetOwnedCurrency(_currencyType);
             var currencyAmountText = _currencyData.Amount.ToString();

@@ -12,7 +12,6 @@ namespace Controllers
     {
         private IGameplayData _persistentData;
         private IGameplayData _cachedPersistentData;
-        private IEventBinding<SaveDataEvent> _saveDataEventBinding;
         
         public IGameplayData PersistentData => _persistentData;
         public IGameplayData CachedPersistentData => _cachedPersistentData;
@@ -35,13 +34,12 @@ namespace Controllers
 
         public void AddEventBindings()
         {
-            _saveDataEventBinding = new EventBinding<SaveDataEvent>(SaveDataToDisk);
-            EventBus<SaveDataEvent>.Register(_saveDataEventBinding);
+            EventBusManager.Subscribe<SaveDataEvent>(SaveDataToDisk);
         }
 
         public void RemoveEventBindings()
         {
-            EventBus<SaveDataEvent>.Deregister(_saveDataEventBinding);
+            EventBusManager.Unsubscribe<SaveDataEvent>(SaveDataToDisk);
         }
 
         public void SaveDataToDisk(SaveDataEvent @event)

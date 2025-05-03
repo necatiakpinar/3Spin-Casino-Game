@@ -14,19 +14,16 @@ namespace UI.Windows
         [SerializeField] private CurrencyWidget _currencyWidget;
         [SerializeField] private CustomButton _spinButton;
 
-        private EventBinding<StateMachineStateChangedEvent> _stateChangedEventBinding;
-
         private void OnEnable()
         {
-            _stateChangedEventBinding = new EventBinding<StateMachineStateChangedEvent>(OnStateMachineStateChanged);
-            EventBus<StateMachineStateChangedEvent>.Register(_stateChangedEventBinding);
+            EventBusManager.Subscribe<StateMachineStateChangedEvent>(OnStateMachineStateChanged);
         }
 
         private void OnDisable()
         {
-            EventBus<StateMachineStateChangedEvent>.Deregister(_stateChangedEventBinding);
+            EventBusManager.Unsubscribe<StateMachineStateChangedEvent>(OnStateMachineStateChanged);
         }
-        
+
         private void OnStateMachineStateChanged(StateMachineStateChangedEvent @event)
         {
             if (@event.StateName == nameof(GameplayState))
@@ -47,17 +44,16 @@ namespace UI.Windows
         {
             var isSpinning = false;
 
-            var isSpinningEventResult = EventBus<GetSpinningStatusEvent, bool>.Raise(new GetSpinningStatusEvent());
-            if (isSpinningEventResult != null)
-                isSpinning = isSpinningEventResult[0];
+            var isSpinningEventResult = EventBusManager.RaiseWithResult<GetSpinningStatusEvent, bool>(new GetSpinningStatusEvent());
+            isSpinning = isSpinningEventResult;
 
             if (isSpinning)
             {
                 LoggerUtil.Log("Can't spin while spinning!");
                 return;
             }
-
-            EventBus<SpinPressedEvent, UniTask>.Raise(new SpinPressedEvent());
+            
+            EventBusManager.RaiseWithResult<SpinPressedEvent, UniTask>(new SpinPressedEvent());
         }
     }
 }

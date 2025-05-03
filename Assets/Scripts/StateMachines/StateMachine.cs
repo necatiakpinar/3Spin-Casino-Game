@@ -4,10 +4,11 @@ using Cysharp.Threading.Tasks;
 using EventBus;
 using EventBus.Events;
 using Interfaces;
+using ILogger = Interfaces.ILogger;
 
 namespace StateMachines
 {
-    public class StateMachine
+    public class StateMachine : IStateMachine
     {
         private readonly Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
         private IState _currentState;
@@ -20,26 +21,30 @@ namespace StateMachines
         
         public void AddState<T>(T state) where T : IState
         {
-            var type = typeof(T);
+            var type = state.GetType();
             if (_states.ContainsKey(type))
             {
-                _logger.LogWarning($"{type.Name} already added to StateMachine.");
+                _logger.LogError($"{type.Name} already added to StateMachine.");
                 return;
             }
 
-            state.SetChangeStateAction(ChangeStateInternal);
+            _logger.Log(type);
+            state.ChangeState = ChangeStateInternal;
             _states.Add(type, state);
         }
 
-        public async UniTask ChangeState<T>() where T : IState
+        public async UniTask ChangeState<T>(IStateParameters parameters = null) where T : IState
         {
-            await ChangeStateInternal(typeof(T));
+            await ChangeStateInternal(typeof(T), parameters);
         }
 
-        private async UniTask ChangeStateInternal(Type targetType)
+        public async UniTask ChangeStateInternal(Type targetType, IStateParameters parameters = null)
         {
             if (!_states.TryGetValue(targetType, out var newState))
-                _logger.LogError($"State {targetType.Name} is not added to StateMachine.");
+            {
+                _logger.Log($"State {targetType.Name} not registered.");
+                return;
+            }
 
             if (_currentState != null)
                 await _currentState.Exit();
@@ -47,14 +52,9 @@ namespace StateMachines
             _currentState = newState;
 
             if (_currentState != null)
-                await _currentState.Enter();
-            
-            EventBus<StateMachineStateChangedEvent>.Raise(new StateMachineStateChangedEvent(targetType.Name));
-        }
+                await _currentState.Enter(parameters);
 
-        public void Update()
-        {
-            _currentState?.Update();
+            EventBusManager.Raise(new StateMachineStateChangedEvent(targetType.Name));
         }
     }
 }

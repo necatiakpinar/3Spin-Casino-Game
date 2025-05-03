@@ -1,6 +1,7 @@
 ﻿using Addressables;
 using Data.ScriptableObjects.Properties;
 using Factories;
+using Interfaces;
 using Loggers;
 using StateMachines.States;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace Managers
         [SerializeField] private Transform _gridParent;
         private GridPropertiesDataSo _gridProperties;
         private StateMachines.StateMachine _stateMachine;
+
+        private IState _startState;
+        private IState _gameplayState;
         private readonly UnityLogger _logger = new UnityLogger();
 
         private async void Start()
@@ -22,15 +26,12 @@ namespace Managers
             var transformProvider = new UnityTransform(_gridParent);
 
             _stateMachine = new StateMachines.StateMachine(_logger);
-            _stateMachine.AddState(new StartingState(objectFactory, transformProvider, _gridProperties, _logger));
-            _stateMachine.AddState(new GameplayState(_logger));
+            _startState = new StartingState(objectFactory, transformProvider, _gridProperties, _logger);
+            _gameplayState = new GameplayState(_logger);
+            _stateMachine.AddState(_startState);
+            _stateMachine.AddState(_gameplayState);
 
             await _stateMachine.ChangeState<StartingState>();
-        }
-
-        private void Update()
-        {
-            _stateMachine?.Update();
         }
     }
 }

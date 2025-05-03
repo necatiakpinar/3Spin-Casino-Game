@@ -12,23 +12,17 @@ namespace Managers
     public class PoolManager : MonoBehaviour
     {
         [SerializeField] private VfxPool _vfxPool;
-
-        private EventBinding<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>> _spawnFromVfxPoolEventBinding;
-        private EventBinding<ReturnToPoolEvent<VFXType, BaseVFX>> _returnToVfxPoolEventBinding;
-
+        
         private void OnEnable()
         {
-            _spawnFromVfxPoolEventBinding = new EventBinding<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>(SpawnFromVfxPool);
-            EventBus<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>.Register(_spawnFromVfxPoolEventBinding);
-
-            _returnToVfxPoolEventBinding = new EventBinding<ReturnToPoolEvent<VFXType, BaseVFX>>(ReturnToVfxPool);
-            EventBus<ReturnToPoolEvent<VFXType, BaseVFX>>.Register(_returnToVfxPoolEventBinding);
+            EventBusManager.SubscribeWithResult<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>(SpawnFromVfxPool);
+            EventBusManager.Subscribe<ReturnToPoolEvent<VFXType, BaseVFX>>(ReturnToVfxPool);
         }
 
         private void OnDisable()
         {
-            EventBus<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>.Deregister(_spawnFromVfxPoolEventBinding);
-            EventBus<ReturnToPoolEvent<VFXType, BaseVFX>>.Deregister(_returnToVfxPoolEventBinding);
+            EventBusManager.UnsubscribeWithResult<SpawnFromObjectPoolEvent<VFXType>, UniTask<BaseVFX>>(SpawnFromVfxPool);
+            EventBusManager.Unsubscribe<ReturnToPoolEvent<VFXType, BaseVFX>>(ReturnToVfxPool);
         }
 
         private async UniTask<BaseVFX> SpawnFromVfxPool(SpawnFromObjectPoolEvent<VFXType> @event)

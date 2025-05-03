@@ -7,30 +7,35 @@ namespace StateMachines.States
 {
     public class GameplayState : IState
     {
-        private Func<Type, UniTask> _changeState;
+        public Func<Type, IStateParameters, UniTask> ChangeState { get; set; }
+
         private readonly ILogger _logger;
 
         public GameplayState(ILogger logger)
         {
             _logger = logger;
         }
-        
-        public async UniTask Enter()
+
+        public async UniTask Enter(IStateParameters parameters = null)
         {
             _logger.Log("GameplayState Entered");
             await UniTask.CompletedTask;
         }
+
+        public void AddEventBindings()
+        {
+
+        }
+
+        public void RemoveEventBindings()
+        {
+
+        }
+        
         public async UniTask Exit()
         {
             await UniTask.CompletedTask;
         }
-        public void Update()
-        {
-        }
-
-        public void SetChangeStateAction(Func<Type, UniTask> changeStateAction)
-        {
-            _changeState = changeStateAction;
-        }
+        
     }
 }

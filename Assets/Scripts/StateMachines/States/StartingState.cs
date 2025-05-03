@@ -8,7 +8,7 @@ namespace StateMachines.States
     public class StartingState : IState
     {
         private GridController _gridController;
-        private Func<Type, UniTask> _changeState;
+        public Func<Type, IStateParameters, UniTask> ChangeState { get; set; }
 
         private readonly IObjectFactory _objectFactory;
         private readonly ITransform _gridTransform;
@@ -24,26 +24,26 @@ namespace StateMachines.States
             _logger = logger;
         }
 
-        public void SetChangeStateAction(Func<Type, UniTask> changeStateAction)
-        {
-            _changeState = changeStateAction;
-        }
-
-        public async UniTask Enter()
+        public async UniTask Enter(IStateParameters parameters = null)
         {
             _gridController = new GridController(_gridProperties, _objectFactory, _gridTransform);
             _logger.Log("StartingState.Enter");
             await UniTask.Delay(_initialWaitDuration);
-            await _changeState.Invoke(typeof(GameplayState));
+            await ChangeState.Invoke(typeof(GameplayState), null);
+        }
+
+        public void AddEventBindings()
+        {
+
+        }
+
+        public void RemoveEventBindings()
+        {
         }
 
         public async UniTask Exit()
         {
             await UniTask.CompletedTask;
-        }
-
-        public void Update()
-        {
         }
     }
 }

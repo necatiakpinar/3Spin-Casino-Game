@@ -24,7 +24,8 @@ namespace Abstractions
         }
         public virtual void ReturnToPool(BaseVFX poolObject)
         {
-            EventBus<ReturnToPoolEvent<VFXType, BaseVFX>>.Raise(new ReturnToPoolEvent<VFXType, BaseVFX>(_vfxType, this));
+            var returnToPoolEvent = new ReturnToPoolEvent<VFXType, BaseVFX>(_vfxType, this);
+            EventBusManager.Raise(returnToPoolEvent);
         }
     }
 }

@@ -5,9 +5,10 @@ namespace Interfaces
 {
     public interface IState
     {
-        UniTask Enter();
+        void AddEventBindings();
+        void RemoveEventBindings();
+        public Func<Type,IStateParameters, UniTask> ChangeState { get; set; }
+        UniTask Enter(IStateParameters parameters = null);
         UniTask Exit();
-        void Update();
-        void SetChangeStateAction(Func<Type, UniTask> changeStateAction);
     }
 }
